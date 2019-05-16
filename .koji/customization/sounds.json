@@ -1,0 +1,21 @@
+{
+    "sounds": {
+      "backgroundMusic": "https://s3-us-west-2.amazonaws.com/koji-cdn/media/ron/game-music.mp3"
+    },
+    "@@editor": [
+      {
+        "key": "sounds",
+        "name": "Sounds",
+        "icon": "🔊️",
+        "source": "sounds.json",
+        "fields": [
+          {
+            "key": "backgroundMusic",
+            "name": "Background Music",
+            "description": "Music to loop in background",
+            "type": "sound"
+          }
+        ]
+      }
+    ]
+  }

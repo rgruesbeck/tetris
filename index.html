@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html style="touch-action: none; overflow: hidden; overscroll-behavior-y: contain; position: fixed">
+
+<head>
+  <meta charset="utf-8" />
+
+  <!-- fit for mobile screens -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=0" />
+
+  <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+</head>
+
+<body style="touch-action: none; overflow: hidden; overscroll-behavior-y: contain; position: fixed">
+  <div id="app">
+    <div id="topBar"></div>
+    <canvas id="gameScreen" style="opacity: 0;"></canvas>
+    <div id="gameOverlay">
+      <div class="container">
+        <div id="loading" class="la-ball-clip-rotate">
+            <div></div>
+        </div>
+        <div class="center">
+          <div id="banner">Game Title</div>
+          <div id="button">Start</div>
+          <div id="instructions"></div>
+        </div>
+        <div id="score">score</div>
+        <div id="lives">lives</div>
+        <i id="mute" class="material-icons">volume_up</i>
+        <i id="pause" class="material-icons">pause</i>
+      </div>
+    </div>
+  </div>
+  <script src="./index.js"></script>
+  <script src="./mobilebundle.js">
+    // fixes for mobile devices 
+  </script>
+</body>
+
+</html>

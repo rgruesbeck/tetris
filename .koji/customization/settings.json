@@ -1,0 +1,55 @@
+{
+    "settings": {
+      "name": "Game",
+      "startText": "Start",
+      "gameoverText": "Game Over",
+      "instructionsMobile": "Swipe in direction character should move",
+      "instructionsDesktop": "Use arrow keys to move: [ ⇠ ⇢ ] [ ⇡ ⇣ ]",
+      "gameTopBar": true,
+      "lives": 3,
+      "fontFamily": "Bungee Inline"
+    },
+    "@@editor": [
+      {
+        "key": "settings",
+        "name": "Game settings",
+        "icon": "🎮",
+        "source": "settings.json",
+        "fields": [
+          {
+            "key": "name",
+            "name": "App name"
+          },
+          {
+            "key": "startText",
+            "name": "Start Button Text"
+          },
+          {
+            "key": "gameoverText",
+            "name": "Text to show when game over"
+          },
+          {
+            "key": "instructionsMobile",
+            "name": "How to play the game on mobile"
+          },
+          {
+            "key": "instructionsDesktop",
+            "name": "How to play the game on desktop"
+          },
+          {
+            "key": "gameTopBar",
+            "name": "If game should have a top bar or not",
+            "type": "boolean"
+          },
+          {
+            "key": "lives",
+            "name": "How many lives a character has"
+          },
+          {
+            "key": "fontFamily",
+            "name": "Font to use for text in the game"
+          }
+        ]
+      }
+    ]
+  }

@@ -1,0 +1,29 @@
+{
+  "images": {
+    "playerImage": "https://i.imgur.com/LHdhmon.png",
+    "butterflyImage": "https://i.imgur.com/kUPI7H8.png",
+    "backgroundImage": "https://i.imgur.com/72Cipks.png"
+  },
+  "@@editor": [
+    {
+      "key": "images",
+      "name": "Images",
+      "icon": "🖼️",
+      "source": "images.json",
+      "fields": [
+        {
+          "key": "playerImage",
+          "name": "Player Image",
+          "description": "Player image",
+          "type": "image"
+        },
+        {
+          "key": "backgroundImage",
+          "name": "Background Image",
+          "description": "Background image",
+          "type": "image"
+        }
+      ]
+    }
+  ]
+}
