@@ -6,7 +6,9 @@
       "instructionsMobile": "Swipe in direction character should move",
       "instructionsDesktop": "Use arrow keys to move: [ ⇠ ⇢ ] [ ⇡ ⇣ ]",
       "gameTopBar": true,
-      "lives": 3,
+      "tickRate": 60,
+      "columns": 10,
+      "rows": 20,
       "fontFamily": "Bungee Inline"
     },
     "@@editor": [

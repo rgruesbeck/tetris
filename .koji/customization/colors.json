@@ -3,6 +3,7 @@
     "textColor": "#FAF0CA",
     "primaryColor": "#0D3B66",
     "blockColorOne": "#ff6142",
+    "boardColor": "#FFE74C",
     "backgroundColor": "#63D471"
   },
   "@@editor": [

@@ -17,11 +17,20 @@
     transition: opacity 2s;
 }
 
-canvas {
+#gameScreen {
     background: #eee;
     display: block;
     margin: auto;
     transition: opacity 1s;
+}
+
+#gameBoard {
+    background: #eee;
+    position: absolute;
+    top: 4em;
+    left: calc(100vw / 4);
+    z-index: 2;
+    transition: opacity 2s;
 }
 
 #gameOverlay {

@@ -33,6 +33,17 @@ const inBox = (x, y, box) => {
     return inX && inY;
 }
 
+// return larger bounds
+// useful for hiding images offscreen
+const padBounds = (bounds, x, y) => {
+    return {
+        top: bounds.top - y,
+        right: bounds.right + x,
+        bottom: bounds.bottom + y,
+        left: bounds.bottom - x
+    };
+}
+
 // get random point or screen
 const pickLocation = (bounds) => {
     return {
@@ -85,6 +96,7 @@ const pickLocationAwayFromList = (bounds, list, distance, depth = 0, maxDepth = 
 }
 
 export {
+    padBounds,
     pickLocation,
     pickLocationAwayFrom,
     pickLocationAwayFromList,

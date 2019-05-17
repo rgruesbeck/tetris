@@ -56,6 +56,22 @@ const pickFromList = (list) => {
     return list[index];
 }
 
+// getMaxFromList
+const getMaxFromList = (list) => {
+    return list
+    .reduce((max, item) => {
+        return Math.max(max, item);
+    }, 0);
+}
+
+// getMinFromList
+const getMinFromList = (list) => {
+    return list
+    .reduce((min, item) => {
+        return Math.min(min, item);
+    }, list[0] + 1);
+}
+
 // apply a lower and upper bound to a number
 const bounded = (n, min, max) => {
     return [n]
@@ -110,6 +126,8 @@ export {
     bounded,
     isBounded,
     pickFromList,
+    getMaxFromList,
+    getMinFromList,
     getCursorPosition,
     getDistance,
     hexToRgbA,

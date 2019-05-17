@@ -34,17 +34,20 @@ import {
     loadFont
 } from './helpers/assetLoaders.js';
 
-import Player from './characters/player.js';
+import Piece from './characters/piece.js';
 
 class Game {
 
-    constructor(canvas, overlay, topbar, config) {
+    constructor(screen, board, overlay, topbar, config) {
         this.config = config; // customization
         this.overlay = overlay;
         this.topbar = topbar;
 
-        this.canvas = canvas; // game screen
-        this.ctx = canvas.getContext("2d"); // game screen context
+        this.canvas = screen; // game screen
+        this.ctx = screen.getContext("2d"); // game screen context
+
+        this.boardCanvas = board; // game board
+        this.boardCtx = board.getContext("2d"); // game board context
 
         // frame count, rate, and time
         // this is just a place to keep track of frame rate (not set it)
@@ -60,6 +63,7 @@ class Game {
             current: 'loading',
             prev: '',
             score: 0,
+            tickRate: parseInt(this.config.settings.tickRate),
             paused: false,
             muted: localStorage.getItem('game-muted') === 'true'
         };
@@ -70,12 +74,6 @@ class Game {
             mouse: { x: 0, y: 0, click: false },
             touch: { x: 0, y: 0 },
         };
-
-        this.images = {}; // place to keep images
-        this.sounds = {}; // place to keep sounds
-        this.fonts = {}; // place to keep fonts
-
-        this.player = {};
 
         // setup event listeners
         // handle keyboard events
@@ -113,7 +111,7 @@ class Game {
         this.topbar.style.display = this.topbar.active ? 'block' : 'none';
         this.topbar.style.backgroundColor = this.config.colors.primaryColor;
 
-        // set canvas
+        // set screen size
         this.canvas.width = window.innerWidth; // set game screen width
         this.canvas.height = this.topbar.active ? window.innerHeight - this.topbar.clientHeight : window.innerHeight; // set game screen height
 
@@ -127,6 +125,37 @@ class Game {
             centerY: this.canvas.height / 2,
             scale: ((this.canvas.width + this.canvas.height) / 2) * 0.003
         };
+
+        // set board size
+        this.boardCanvas.width = this.canvas.width / 2;
+        this.boardCanvas.height = this.canvas.height;
+
+        // set state
+        let { tickRate } = this.config.settings;
+        this.setState({
+            score: 0,
+            tickRate: parseInt(tickRate)
+        });
+
+        // board settings
+        let { columns, rows } = this.config.settings;
+        this.board = {
+            width: columns,
+            height: rows,
+            cellSize: Math.min(this.boardCanvas.width / columns, this.boardCanvas.height / rows),
+        }
+
+        // set board size
+        let boardHeight = this.board.height * this.board.cellSize;
+        this.boardCanvas.height = boardHeight;
+        this.boardCanvas.style.top = `${(window.innerHeight - boardHeight) / 2}px`;
+
+        // set containers
+        this.images = {}; // place to keep images
+        this.sounds = {}; // place to keep sounds
+        this.fonts = {}; // place to keep fonts
+
+        this.pieces = []; // place to store pieces
 
         // set document body to backgroundColor
         document.body.style.backgroundColor = this.config.colors.backgroundColor;
@@ -162,26 +191,6 @@ class Game {
     }
 
     create() {
-        // create game characters
-
-        const { scale, centerX, centerY } = this.screen;
-
-
-        let playerHeight = 60 * scale;
-        let playerWidth = 70 * scale;
-
-        this.player = new Player({
-            ctx: this.ctx,
-            image: this.images.butterflyImage,
-            color: this.config.colors.blockColorOne,
-            x: centerX - playerWidth / 4,
-            y: centerY,
-            width: playerWidth,
-            height: playerHeight,
-            speed: 50,
-            bounds: this.screen
-        });
-
         // set overlay styles
         this.overlay.setStyles({...this.config.colors, ...this.config.settings});
 
@@ -196,6 +205,10 @@ class Game {
         this.ctx.fillStyle = this.config.colors.backgroundColor; 
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
+        // clear the board of the last picture
+        this.boardCtx.fillStyle = this.config.colors.boardColor; 
+        this.boardCtx.fillRect(0, 0, this.boardCanvas.width, this.boardCanvas.height);
+
         // draw and do stuff that you need to do
         // no matter the game state
         // this.ctx.drawImage(this.images.backgroundImage, 0, 0, this.canvas.width, this.canvas.height);
@@ -204,6 +217,7 @@ class Game {
         if (this.state.current === 'ready') {
             this.overlay.hide('loading');
             this.canvas.style.opacity = 1;
+            this.boardCanvas.style.opacity = 1;
 
             this.overlay.setBanner(this.config.settings.name);
             this.overlay.setButton(this.config.settings.startText);
@@ -213,7 +227,6 @@ class Game {
             });
 
             this.overlay.show('stats');
-            this.overlay.setLives(this.config.settings.lives);
             this.overlay.setScore(this.state.score);
 
             this.overlay.setMute(this.state.muted);
@@ -231,9 +244,47 @@ class Game {
                 this.overlay.hide(['banner', 'button', 'instructions'])
             }
 
+            // play background music
             if (!this.state.muted) { this.sounds.backgroundMusic.play(); }
 
-            this.player.draw();
+            // spawn a new piece if no piece in play
+            if (this.pieces.length < 1) {
+                console.log(this.boardCanvas)
+                this.pieces = [
+                    ...this.pieces,
+                    new Piece({
+                        ctx: this.boardCtx,
+                        board: this.board,
+                        image: this.images.butterflyImage,
+                        color: this.config.colors.blockColorOne,
+                        cellSize: this.board.cellSize,
+                        cellBounds: {
+                            top: 0,
+                            right: this.board.width,
+                            bottom: this.board.height,
+                            left: 0
+                        },
+                        bounds: this.screen
+                    })
+                ]
+            }
+
+            // every game tick, shift piece down
+            if (this.frame.count % this.state.tickRate === 0) {
+                this.pieces = this.pieces
+                .map(piece => {
+                    piece.shift({ y: 1 });
+                    return piece;
+                })
+                .map(piece => {
+                    return piece;
+                })
+                .filter(piece => piece.box.bottom < this.board.height);
+            }
+
+            // draw pieces
+            this.pieces
+            .forEach(piece => piece.draw());
         }
 
         // player wins
@@ -248,6 +299,18 @@ class Game {
 
         // draw the next screen
         this.requestFrame(() => this.play());
+    }
+
+    shiftPiece(location) {
+        let piece = this.pieces[0];
+
+        piece.shift({ x: location.x, y: location.y });
+    }
+
+    rotatePiece() {
+        let piece = this.pieces[0];
+
+        piece.rotate();
     }
 
     // event listeners
@@ -280,23 +343,31 @@ class Game {
 
         if (type === 'keydown') {
             if (code === 'ArrowUp') {
-                this.player.shift({ y: -1 });
+                this.rotatePiece();
             }
+
+            // move right
             if (code === 'ArrowRight') {
-                this.player.shift({ x: 1 });
+                this.shiftPiece({ x: 1 });
             }
+
+            // move down
             if (code === 'ArrowDown') {
-                this.player.shift({ y: 1 });
+                this.shiftPiece({ y: 1 });
             }
+
+            // move left
             if (code === 'ArrowLeft') {
-                this.player.shift({ x: -1 });
+                this.shiftPiece({ x: -1 });
+            }
+
+            // drop
+            if (code === 'Space') {
+                this.shiftPiece({ y: 3 })
             }
         }
 
         if (type === 'keyup') {
-            if (code === 'Space') {
-                this.player.rotate();
-            }
         }
     }
 

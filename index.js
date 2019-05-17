@@ -25,6 +25,7 @@ import Overlay from './game/overlay.js';
 // gameOverlay is where the where start button, score, lives,
 // play and pause buttons etc will be displayed
 const gameScreen = document.getElementById("gameScreen");
+const gameBoard = document.getElementById("gameBoard");
 const gameOverlay = document.getElementById("gameOverlay");
 const topbar = document.getElementById("topBar");
 
@@ -32,5 +33,5 @@ const topbar = document.getElementById("topBar");
 // create new game and load it
 const config = Koji.config;
 const overlay = new Overlay(gameOverlay)
-const game = new Game(gameScreen, overlay, topbar, config);
+const game = new Game(gameScreen, gameBoard, overlay, topbar, config);
 game.load();
