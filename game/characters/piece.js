@@ -36,6 +36,8 @@ class Piece {
 
         this.cellSize = cellSize;
 
+        this.placed = false;
+
         this.body = this.createBody();
         this.box = { top: 0, right: 0, bottom: 0, left: 0 };
 
@@ -71,9 +73,12 @@ class Piece {
         let hitLeft = this.box.left + x < 0;
         let hitRight = this.box.right + x > this.board.width - 1;
 
-        let hitBottom = this.box.bottom + y > this.board.height;
+        // todo: something off here
+        let hitBottom = this.box.bottom > this.board.height - 2;
 
-        if (hitLeft || hitRight || hitBottom) {
+        if (hitBottom) { this.placed = true; }
+
+        if (this.placed || hitLeft || hitRight) {
             return;
         }
 

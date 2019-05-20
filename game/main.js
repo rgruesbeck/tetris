@@ -34,6 +34,14 @@ import {
     loadFont
 } from './helpers/assetLoaders.js';
 
+import {
+    gridRow,
+    neighborDown,
+    neighborLeft,
+    neighborRight,
+    setGridCell
+} from './utils/gridUtils.js';
+
 import Piece from './characters/piece.js';
 
 class Game {
@@ -130,6 +138,9 @@ class Game {
         this.boardCanvas.width = this.canvas.width / 2;
         this.boardCanvas.height = this.canvas.height;
 
+        // create tick queue
+        this.tickQueue = [];
+
         // set state
         let { tickRate } = this.config.settings;
         this.setState({
@@ -142,7 +153,11 @@ class Game {
         this.board = {
             width: columns,
             height: rows,
+            columns: columns,
+            rows: rows,
             cellSize: Math.min(this.boardCanvas.width / columns, this.boardCanvas.height / rows),
+            blocks: [],
+            grid: []
         }
 
         // set board size
@@ -155,7 +170,9 @@ class Game {
         this.sounds = {}; // place to keep sounds
         this.fonts = {}; // place to keep fonts
 
-        this.pieces = []; // place to store pieces
+        // create lists
+        this.pieces = []; // place to put active pieces
+        this.stack = []; // place to put stacked pieces
 
         // set document body to backgroundColor
         document.body.style.backgroundColor = this.config.colors.backgroundColor;
@@ -232,7 +249,7 @@ class Game {
             this.overlay.setMute(this.state.muted);
             this.overlay.setPause(this.state.paused);
 
-            this.setState({ current: 'play' });
+            // this.setState({ current: 'play' });
         }
 
         // game play
@@ -247,44 +264,147 @@ class Game {
             // play background music
             if (!this.state.muted) { this.sounds.backgroundMusic.play(); }
 
-            // spawn a new piece if no piece in play
-            if (this.pieces.length < 1) {
-                console.log(this.boardCanvas)
+            // check for game over
+            // game over if there are blocks on the top row
+            let topRow = gridRow(this.board.grid, 0);
+            if (topRow.length > 0) {
+                this.setState({ current: 'over' });
+            }
+
+            // every game tick update the game
+            let queuedTick = this.tickQueue.length > 0;
+            if (queuedTick) {
+
+                // run tick task: shift, rotate, etc
+                const tick = this.tickQueue.pop();
+                tick.run();
+
+                // if there is a placed piece
+                // transfer all the blocks from a placed piece
+                // to the stack of blocks
+                this.stack = [
+                    ...this.stack,
+                    ...this.pieces
+                    .filter(piece => piece.placed)
+                    .map(piece => piece.body)
+                    .flat()
+                ];
+
+                // remove placed pieces from pieces list
                 this.pieces = [
-                    ...this.pieces,
-                    new Piece({
-                        ctx: this.boardCtx,
-                        board: this.board,
-                        image: this.images.butterflyImage,
-                        color: this.config.colors.blockColorOne,
-                        cellSize: this.board.cellSize,
-                        cellBounds: {
-                            top: 0,
-                            right: this.board.width,
-                            bottom: this.board.height,
-                            left: 0
-                        },
-                        bounds: this.screen
-                    })
+                    ...this.pieces
+                    .filter(piece => !piece.placed)
                 ]
+
+                // if there is no piece in play
+                // put a new piece in play
+                if (this.pieces.filter(p => !p.placed).length < 1) {
+                    this.pieces = [
+                        ...this.pieces,
+                        new Piece({
+                            ctx: this.boardCtx,
+                            board: this.board,
+                            image: this.images.butterflyImage,
+                            color: this.config.colors.blockColorOne,
+                            cellSize: this.board.cellSize,
+                            cellBounds: {
+                                top: 0,
+                                right: this.board.width,
+                                bottom: this.board.height,
+                                left: 0
+                            },
+                            bounds: this.screen
+                        })
+                    ]
+                }
+
+                // update board blocks
+                this.board.blocks = [
+                    ...this.pieces
+                    .map(piece => piece.body)
+                    .flat(),
+                    ...this.stack
+                ]
+
+                // update the grid with
+                // current placed block locations
+                this.board.grid = this.stack
+                .map(blocks => blocks.cell)
+                .reduce((grid, cell) => {
+
+                   // flag the grid cell as occupied by a block
+                   return setGridCell(grid, cell, true);
+
+                   // flag the grid cell as
+                }, [])
+
             }
 
-            // every game tick, shift piece down
-            if (this.frame.count % this.state.tickRate === 0) {
-                this.pieces = this.pieces
-                .map(piece => {
-                    piece.shift({ y: 1 });
-                    return piece;
-                })
-                .map(piece => {
-                    return piece;
-                })
-                .filter(piece => piece.box.bottom < this.board.height);
+            // schedule a tick to shift piece down by tick rate
+            let scheduledTick = this.frame.count % this.state.tickRate === 0;
+            if (scheduledTick) {
+
+                // queue shift down for block in the piece
+                this.queueTick(() => this.shiftPieceDown());
+
+
+                // clear-line
+                // full rows of block get removed
+                // get row counts (how many placed blocks are in each row)
+                let rowCounts = this.stack
+                .map(block => block.cell.y)
+                .reduce((rows, y) => {
+
+                    // set empty cell to 0
+                    if (typeof rows[y] === 'undefined') { rows[y] = 0; }
+
+                    // increment cell full count
+                    rows[y] += 1;
+
+                    return rows;
+                }, {})
+
+                // get full rows (row count equals board columns)
+                let fullRows = Object.entries(rowCounts)
+                .filter(ent => ent[1] === this.board.columns)
+                .map(ent => parseInt(ent[0]));
+
+                // remove blocks from full row
+                // and shift the stack down
+                if (fullRows.length > 0) {
+                    // mark all block above line as unsupported
+                    // remove blocks
+                    this.stack = [
+                        ...this.stack
+                        .map(block => {
+                            if (block.cell.y < fullRows[0]) {
+                                block.unsupported = true;
+                            }
+
+                            return block;
+                        })
+                        .filter(block => {
+                            console.log(fullRows);
+                            return block.cell.y != fullRows[0];
+                        })
+                    ]
+
+
+                    // queue shift down for blocks in the stack
+                    this.queueTick(() => this.shiftStackDown());
+                }
+
+                // clear-line gravity
+                // do cascade style clear-line gravity
+                // https://tetris.fandom.com/wiki/Line_clear#Line_clear_gravity
+
+                // mark unsupported blocks in stack
+
             }
 
-            // draw pieces
-            this.pieces
-            .forEach(piece => piece.draw());
+            // draw board
+            this.board.blocks
+            .forEach(block => block.draw());
         }
 
         // player wins
@@ -295,22 +415,110 @@ class Game {
         // game over
         if (this.state.current === 'over') {
 
+            this.overlay.setBanner('Game Over');
         }
 
         // draw the next screen
         this.requestFrame(() => this.play());
     }
 
-    shiftPiece(location) {
-        let piece = this.pieces[0];
+    shiftStackDown() {
+        // shift un-supported blocks down
+        this.stack = this.stack
+        .map(block => {
 
-        piece.shift({ x: location.x, y: location.y });
+            if (block.unsupported) {
+
+                // shift down
+                block.shift({ y: 1 });
+
+                // re-mark as supported
+                block.unsupported = false;
+            }
+
+            return block;
+        })
+    }
+
+    shiftPieceDown() {
+        this.updatePieces((piece) => {
+            // check for blocks below
+            let hasDownNeighbor = piece.body
+                .some(block => {
+                    return neighborDown(this.board.grid, block.cell);
+                })
+
+            if (!hasDownNeighbor) {
+
+                // shift down
+                piece.shift({ y: 1 });
+            } else {
+
+                // mark as placed
+                piece.placed = true;
+            }
+
+            return piece;
+        });
+    }
+
+    shiftPieceLeft() {
+        this.updatePieces((piece) => {
+            // check for left blocks
+            let hasLeftNeighbor = piece.body
+            .some(block => {
+                // check there is a block on the left
+                return neighborLeft(this.board.grid, block.cell);
+            });
+
+            if (!hasLeftNeighbor) {
+
+                // shift to the left
+                piece.shift({ x: -1 })
+            }
+
+            return piece;
+        });
+    }
+
+    shiftPieceRight() {
+        this.updatePieces((piece) => {
+            // check for right blocks
+            let hasRightNeighbor = piece.body
+            .some(block => {
+                // check there is a block on the left
+                return neighborRight(this.board.grid, block.cell);
+            });
+
+            if (!hasRightNeighbor) {
+
+                // shift to the right
+                piece.shift({ x: 1 })
+            }
+
+            return piece;
+        });
     }
 
     rotatePiece() {
-        let piece = this.pieces[0];
+        this.updatePieces((piece) => {
 
-        piece.rotate();
+            piece.rotate();
+            return piece;
+        });
+    }
+
+    updatePieces(fn) {
+        this.pieces = this.pieces
+        .map(p => fn(p));
+    }
+
+    queueTick(fn) {
+        // add a new tick to the tick queue
+        this.tickQueue = [
+            { run: fn },
+            ...this.tickQueue
+        ];
     }
 
     // event listeners
@@ -336,38 +544,51 @@ class Game {
             this.mute();
         }
 
+        if (this.state.current === 'over') {
+            // restart
+            this.load();
+        }
+
     }
 
     handleKeyboardInput(type, code) {
         this.input.active = 'keyboard';
 
         if (type === 'keydown') {
+            // rotate
             if (code === 'ArrowUp') {
-                this.rotatePiece();
+                this.queueTick(() => this.rotatePiece());
             }
 
-            // move right
-            if (code === 'ArrowRight') {
-                this.shiftPiece({ x: 1 });
-            }
-
-            // move down
-            if (code === 'ArrowDown') {
-                this.shiftPiece({ y: 1 });
-            }
-
-            // move left
+            // shift left
             if (code === 'ArrowLeft') {
-                this.shiftPiece({ x: -1 });
+                this.queueTick(() => this.shiftPieceLeft());
             }
+
+            // shift right
+            if (code === 'ArrowRight') {
+                this.queueTick(() => this.shiftPieceRight());
+            }
+
+            // shift down
+            if (code === 'ArrowDown') {
+                this.queueTick(() => this.shiftPieceDown());
+            }
+
 
             // drop
             if (code === 'Space') {
-                this.shiftPiece({ y: 3 })
+                // this.shiftPiece({ y: 3 })
             }
         }
 
         if (type === 'keyup') {
+
+            // any key restart
+            // when game over, or ready
+            if (this.state.current.match(/over|ready/)) {
+                this.setState({ current: 'play' });
+            }
         }
     }
 

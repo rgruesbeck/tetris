@@ -1,4 +1,4 @@
-# HTML5 Canvas Game Scaffold
+# Tetris
 ![Game Artwork](https://i.imgur.com/jcBe9Ef.png)
 
 A perfect beginner template for new game makers. Jump right into the "index.js" file and begin editing your game settings.

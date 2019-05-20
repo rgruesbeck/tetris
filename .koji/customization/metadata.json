@@ -1,7 +1,7 @@
 {
   "metadata": {
-    "title": "HTML5 Canvas Game Scaffold",
-    "description": "A scaffold for creating games with HTML5 Canvas on Koji. Easily customizable at gokoji.com.",
+    "title": "Tetris",
+    "description": "Classic puzzle game. Easily customizable at gokoji.com.",
     "image": "https://i.imgur.com/1VTl2r7.png",
     "icon": "https://via.placeholder.com",
     "icon192": "https://via.placeholder.com/192",
