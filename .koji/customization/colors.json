@@ -1,10 +1,15 @@
 {
   "colors": {
-    "textColor": "#FAF0CA",
+    "textColor": "#ffda44",
     "primaryColor": "#0D3B66",
-    "blockColorOne": "#ff6142",
     "boardColor": "#0D3B66",
-    "backgroundColor": "#63D471"
+    "backgroundColor": "#63D471",
+    "block1": "#96c8ef",
+    "block2": "#e76b93",
+    "block3": "#ffde55",
+    "block4": "#70efef",
+    "block5": "#ffcf30",
+    "block6": "pink"
   },
   "@@editor": [
     {

@@ -72,6 +72,13 @@ const neighborDown = (grid, cell) => {
     return gridCell(grid, cell.x, cell.y + 1);
 }
 
+const getCellSize = (width, height, rows, cols) => {
+    let sizeByWidth = Math.round(width / cols);
+    let sizeByHeight = Math.round(height / rows);
+
+    return Math.min(sizeByWidth, sizeByHeight);
+}
+
 export {
     gridCell,
     gridCol,
@@ -79,5 +86,6 @@ export {
     setGridCell,
     neighborLeft,
     neighborRight,
-    neighborDown
+    neighborDown,
+    getCellSize
 };

@@ -34,7 +34,7 @@ const randomBetween = (min, max, type) => {
     const rand = Math.random() * (max - min) + min;
 
     if (type && type === 'int') {
-        return parseInt(rand);
+        return Math.round(rand);
     }
 
     return rand;

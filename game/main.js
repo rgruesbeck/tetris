@@ -35,18 +35,29 @@ import {
 } from './helpers/assetLoaders.js';
 
 import {
+    pickFromList, getMinFromList
+} from './utils/baseUtils.js';
+
+import {
+    padBounds
+} from './utils/spriteUtils.js';
+
+import {
     gridRow,
     neighborDown,
     neighborLeft,
     neighborRight,
-    setGridCell
+    setGridCell,
+    getCellSize,
+    gridCell
 } from './utils/gridUtils.js';
 
 import Piece from './characters/piece.js';
+import ImageSprite from './objects/imageSprite.js';
 
 class Game {
 
-    constructor(screen, board, overlay, topbar, config) {
+    constructor(screen, board, effects, overlay, topbar, config) {
         this.config = config; // customization
         this.overlay = overlay;
         this.topbar = topbar;
@@ -56,6 +67,9 @@ class Game {
 
         this.boardCanvas = board; // game board
         this.boardCtx = board.getContext("2d"); // game board context
+
+        this.effectsCanvas = effects; // effects canvas
+        this.effectsCtx = effects.getContext("2d"); // game effects context
 
         // frame count, rate, and time
         // this is just a place to keep track of frame rate (not set it)
@@ -135,8 +149,17 @@ class Game {
         };
 
         // set board size
-        this.boardCanvas.width = this.canvas.width / 2;
-        this.boardCanvas.height = this.canvas.height;
+        //let cellSize = this.canvas.height / this.config.settings;
+        let { columns, rows } = this.config.settings;
+        let cellSize = getCellSize(
+            this.canvas.width,
+            this.canvas.height,
+            rows,
+            columns
+        );
+
+        this.boardCanvas.width = cellSize * columns;
+        this.boardCanvas.height = cellSize * rows;
 
         // create tick queue
         this.tickQueue = [];
@@ -149,21 +172,33 @@ class Game {
         });
 
         // board settings
-        let { columns, rows } = this.config.settings;
         this.board = {
             width: columns,
             height: rows,
             columns: columns,
             rows: rows,
-            cellSize: Math.min(this.boardCanvas.width / columns, this.boardCanvas.height / rows),
+            cellSize: cellSize,
             blocks: [],
-            grid: []
+            grid: [],
+            lastClear: 0
         }
+
+        // random bag for next pieces
+        this.bag = [];
 
         // set board size
         let boardHeight = this.board.height * this.board.cellSize;
         this.boardCanvas.height = boardHeight;
-        this.boardCanvas.style.top = `${(window.innerHeight - boardHeight) / 2}px`;
+
+        // place board
+        this.boardCanvas.style.top = `${(this.canvas.height - this.boardCanvas.height) / 2 + this.canvas.offsetTop}px`;
+        this.boardCanvas.style.left = `${(this.canvas.width - this.boardCanvas.width) / 2}px`;
+
+        // place effects
+        this.effectsCanvas.style.top = `${this.canvas.offsetTop}px`;
+        this.effectsCanvas.style.left = `${0}px`;
+        this.effectsCanvas.width = this.canvas.width;
+        this.effectsCanvas.height = this.canvas.height;
 
         // set containers
         this.images = {}; // place to keep images
@@ -172,7 +207,8 @@ class Game {
 
         // create lists
         this.pieces = []; // place to put active pieces
-        this.stack = []; // place to put stacked pieces
+        this.stack = []; // place to put stacked blocks
+        this.cleared = []; // place to host cleared blocks
 
         // set document body to backgroundColor
         document.body.style.backgroundColor = this.config.colors.backgroundColor;
@@ -189,8 +225,14 @@ class Game {
         
         // make a list of assets
         const gameAssets = [
-            loadImage('playerImage', this.config.images.playerImage),
-            loadImage('butterflyImage', this.config.images.butterflyImage),
+            loadImage('block1', this.config.images.block1),
+            loadImage('block2', this.config.images.block2),
+            loadImage('block3', this.config.images.block3),
+            loadImage('block4', this.config.images.block4),
+            loadImage('block5', this.config.images.block5),
+            loadImage('block6', this.config.images.block6),
+            loadImage('spectatorLeft', this.config.images.spectatorLeft),
+            loadImage('spectatorRight', this.config.images.spectatorRight),
             loadImage('backgroundImage', this.config.images.backgroundImage),
             loadSound('backgroundMusic', this.config.sounds.backgroundMusic),
             loadFont('gameFont', this.config.settings.fontFamily)
@@ -211,6 +253,56 @@ class Game {
         // set overlay styles
         this.overlay.setStyles({...this.config.colors, ...this.config.settings});
 
+        // setup block styles
+        this.blockStyles = [
+            {
+                color: this.config.colors.block1,
+                image: this.images.block1
+            },
+            {
+                color: this.config.colors.block2,
+                image: this.images.block2
+            },
+            {
+                color: this.config.colors.block3,
+                image: this.images.block3
+            },
+            {
+                color: this.config.colors.block4,
+                image: this.images.block4
+            },
+            {
+                color: this.config.colors.block5,
+                image: this.images.block5
+            },
+            {
+                color: this.config.colors.block6,
+                image: this.images.block6
+            }
+        ];
+
+        // setup spectators
+        this.spectatorSize = (this.canvas.width - this.boardCanvas.width) / 2;
+        this.leftSpectator = new ImageSprite({
+            ctx: this.ctx,
+            image: this.images.spectatorLeft,
+            x: 0,
+            y: this.screen.bottom - this.spectatorSize,
+            width: this.spectatorSize,
+            height: this.spectatorSize,
+            bounds: this.screen
+        })
+
+        this.rightSpectator = new ImageSprite({
+            ctx: this.ctx,
+            image: this.images.spectatorRight,
+            x: this.screen.right - this.spectatorSize,
+            y: this.screen.bottom - this.spectatorSize,
+            width: this.spectatorSize,
+            height: this.spectatorSize,
+            bounds: this.screen
+        })
+
         this.setState({ current: 'ready' });
         this.play();
     }
@@ -219,12 +311,17 @@ class Game {
         // update game characters
 
         // clear the screen of the last picture
-        this.ctx.fillStyle = this.config.colors.backgroundColor; 
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        // this.ctx.fillStyle = this.config.colors.backgroundColor; 
+        // this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         // clear the board of the last picture
         this.boardCtx.fillStyle = this.config.colors.boardColor; 
         this.boardCtx.fillRect(0, 0, this.boardCanvas.width, this.boardCanvas.height);
+
+        // clear effects of the last picture
+        this.effectsCtx.fillStyle = 'red'; 
+        this.effectsCtx.fillRect(0, 0, this.effectsCanvas.width, this.effectsCanvas.height);
 
         // draw and do stuff that you need to do
         // no matter the game state
@@ -271,11 +368,18 @@ class Game {
                 this.setState({ current: 'over' });
             }
 
+            // get new random bag of pieces
+            // if bag is empty
+            if (this.bag.length < 1) {
+                this.bag = [0, 1, 2, 3, 4, 5, 6];
+            }
+
             // every game tick update the game
             let queuedTick = this.tickQueue.length > 0;
             if (queuedTick) {
 
                 // run tick task: shift, rotate, etc
+                this.tickQueue.sort((a, b) => a.priority - b.priority);
                 const tick = this.tickQueue.pop();
                 tick.run();
 
@@ -299,13 +403,19 @@ class Game {
                 // if there is no piece in play
                 // put a new piece in play
                 if (this.pieces.filter(p => !p.placed).length < 1) {
+                    // pick a random style
+                    // and pick a random shape from the bag
+                    let block = pickFromList(this.blockStyles);
+                    let shape = pickFromList(this.bag);
+
                     this.pieces = [
                         ...this.pieces,
                         new Piece({
                             ctx: this.boardCtx,
                             board: this.board,
-                            image: this.images.butterflyImage,
-                            color: this.config.colors.blockColorOne,
+                            image: block.image,
+                            color: block.color,
+                            shape: shape,
                             cellSize: this.board.cellSize,
                             cellBounds: {
                                 top: 0,
@@ -316,7 +426,14 @@ class Game {
                             bounds: this.screen
                         })
                     ]
+
+                    // remove shape from the bag
+                    this.bag = [
+                        ...this.bag
+                        .filter(s => s != shape)
+                    ]
                 }
+
 
                 // update board blocks
                 this.board.blocks = [
@@ -335,7 +452,6 @@ class Game {
                    // flag the grid cell as occupied by a block
                    return setGridCell(grid, cell, true);
 
-                   // flag the grid cell as
                 }, [])
 
             }
@@ -345,7 +461,7 @@ class Game {
             if (scheduledTick) {
 
                 // queue shift down for block in the piece
-                this.queueTick(() => this.shiftPieceDown());
+                this.queueTick(1, () => this.shiftPieceDown());
 
 
                 // clear-line
@@ -372,6 +488,32 @@ class Game {
                 // remove blocks from full row
                 // and shift the stack down
                 if (fullRows.length > 0) {
+                    // set cleared stamp
+                    this.board.lastClear = Date.now();
+
+                    // images from cleared line to cleared
+                    // as image sprites
+                    this.cleared = [
+                        ...this.stack
+                        .filter(block => block.cell.y === fullRows[0])
+                        .map(block => {
+                            return new ImageSprite({
+                                ctx: this.ctx,
+                                image: block.image,
+                                x: block.x,
+                                y: block.y,
+                                width: block.width,
+                                height: block.height,
+                                speed: 5,
+                                bounds: null
+                            })
+                        })
+                    ];
+
+                    // clear-line gravity
+                    // do cascade style clear-line gravity
+                    // https://tetris.fandom.com/wiki/Line_clear#Line_clear_gravity
+
                     // mark all block above line as unsupported
                     // remove blocks
                     this.stack = [
@@ -384,27 +526,66 @@ class Game {
                             return block;
                         })
                         .filter(block => {
-                            console.log(fullRows);
+                            // remove full row blocks
                             return block.cell.y != fullRows[0];
                         })
                     ]
 
 
                     // queue shift down for blocks in the stack
-                    this.queueTick(() => this.shiftStackDown());
+                    this.queueTick(1, () => this.shiftStackDown());
                 }
 
-                // clear-line gravity
-                // do cascade style clear-line gravity
-                // https://tetris.fandom.com/wiki/Line_clear#Line_clear_gravity
-
-                // mark unsupported blocks in stack
 
             }
 
             // draw board
             this.board.blocks
             .forEach(block => block.draw());
+
+            // update cleared
+            this.cleared = [
+                ...this.cleared
+                .map((sprite, idx) => {
+                    let dx = idx % 2 === 0 ? 1 : -1;
+                    let dy = idx % 3 === 0 ? -1 : -1.5;
+
+                    sprite.move(dx, dy, this.frame.scale);
+
+                    return sprite;
+                })
+                .filter(sprite => sprite.y > 0)
+                .filter(sprite => sprite.x > 0 + sprite.width)
+                .filter(sprite => sprite.x < this.screen.right)
+            ]
+
+            console.log(this.cleared);
+            // draw cleared
+            this.cleared
+            .forEach(sprite => sprite.draw());
+
+            // draw spectators
+            let now = Date.now();
+            let cheer = Math.cos(this.frame.count / 5);
+            if (now - this.board.lastClear < 3000) {
+                // cheer more
+                cheer = Math.cos(this.frame.count / 3) * 3;
+
+                this.leftSpectator.height += cheer;
+                this.rightSpectator.height += cheer;
+            }
+
+            // reset height
+            this.leftSpectator.height = this.spectatorSize;
+            this.rightSpectator.height = this.spectatorSize;
+
+            // cheer
+            this.leftSpectator.move(0, cheer, this.frame.scale);
+            this.rightSpectator.move(0, cheer, this.frame.scale);
+
+            this.leftSpectator.draw();
+            this.rightSpectator.draw();
+
         }
 
         // player wins
@@ -415,6 +596,7 @@ class Game {
         // game over
         if (this.state.current === 'over') {
 
+            this.sounds.backgroundMusic.pause();
             this.overlay.setBanner('Game Over');
         }
 
@@ -502,10 +684,81 @@ class Game {
 
     rotatePiece() {
         this.updatePieces((piece) => {
+            // check if the rotation results would
+            // take up occupied spaces
+            let rotatedCells = piece.rotatedCells()
+            .map(cell => {
+                // add string id
+                cell.id = `${cell.x}-${cell.y}`;
 
-            piece.rotate();
+                return cell;
+            })
+
+            // .map(cell => `${cell.x}-${cell.y}`)
+
+            let blockingCells = this.stack
+            .map(block => block.cell)
+            .some(cell => {
+                // check if cells are blocking
+                let id = `${cell.x}-${cell.y}`;
+
+                return rotatedCells
+                .map(cell => cell.id)
+                .includes(`${cell.x}-${cell.y}`);
+            });
+
+            // or be off screen
+            let onEdge = rotatedCells
+            .some(cell => {
+                let { x, y } = cell;
+                let offX = x < 0 || x >= this.board.columns;
+                let offY = y < 0 || y >= this.board.rows;
+
+                return offX || offY;
+            });
+
+            if (!blockingCells && !onEdge) {
+
+                piece.rotate();
+            }
+
             return piece;
         });
+    }
+
+    dropPiece() {
+        // drop down until hitting the stack
+        // get the the piece
+        let maxShift = this.board.rows;
+
+        let piece = this.pieces
+        .filter(piece => !piece.placed)
+        .reduce(piece => piece);
+
+        // get the top block of the stack and, calculate the remaining rows
+        let stackCells = this.stack
+        .map(block => block.cell);
+
+        let minShift = piece.body
+        .map(block => block.cell)
+        .reduce((min, cell) => {
+            // find the pairs of cells (piece, stack) on x axis that has the
+            // minimum number of rows in between
+
+            let stackPairs = stackCells.filter(sc => sc.x === cell.x);
+            let minPair = stackPairs.reduce((minP, sp) => {
+                return minP.y < sp.y ? minP : sp;
+            }, { y: maxShift });
+
+            let dy = minPair.y - cell.y;
+
+            return min < dy ? min : dy;
+        }, maxShift);
+
+        // queue downshifts for number of remaining rows
+        for (let row = 0; row < minShift; row += 1) {
+            this.queueTick(0, () => this.shiftPieceDown());
+        }
     }
 
     updatePieces(fn) {
@@ -513,12 +766,13 @@ class Game {
         .map(p => fn(p));
     }
 
-    queueTick(fn) {
+    queueTick(priority, fn) {
+
         // add a new tick to the tick queue
         this.tickQueue = [
-            { run: fn },
+            { priority: priority, run: fn },
             ...this.tickQueue
-        ];
+        ].sort((a, b) => a.priority - b.priority)
     }
 
     // event listeners
@@ -554,39 +808,44 @@ class Game {
     handleKeyboardInput(type, code) {
         this.input.active = 'keyboard';
 
-        if (type === 'keydown') {
+        if (type === 'keydown' && this.state.current === 'play') {
             // rotate
             if (code === 'ArrowUp') {
-                this.queueTick(() => this.rotatePiece());
+                this.queueTick(0, () => this.rotatePiece());
             }
 
             // shift left
             if (code === 'ArrowLeft') {
-                this.queueTick(() => this.shiftPieceLeft());
+                this.queueTick(0, () => this.shiftPieceLeft());
             }
 
             // shift right
             if (code === 'ArrowRight') {
-                this.queueTick(() => this.shiftPieceRight());
+                this.queueTick(0, () => this.shiftPieceRight());
             }
 
             // shift down
             if (code === 'ArrowDown') {
-                this.queueTick(() => this.shiftPieceDown());
+                this.queueTick(0, () => this.shiftPieceDown());
             }
 
 
             // drop
             if (code === 'Space') {
-                // this.shiftPiece({ y: 3 })
+                this.dropPiece();
             }
         }
 
         if (type === 'keyup') {
 
-            // any key restart
-            // when game over, or ready
-            if (this.state.current.match(/over|ready/)) {
+            // any key
+            // reload when game over
+            if (this.state.current.match(/over/)) {
+                this.load();
+            }
+
+            // restart when game ready
+            if (this.state.current.match(/ready/)) {
                 this.setState({ current: 'play' });
             }
         }

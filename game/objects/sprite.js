@@ -84,14 +84,7 @@ class Sprite {
         this.vy = this.y - this.py; // set velocity y
     }
 
-    setBounds({ top, right, bottom, left }) {
-        let bounds = {
-            top: top,
-            right: right,
-            bottom: bottom,
-            left: left
-        };
-
+    setBounds(bounds) {
         this.bounds = {
             ...this.bounds,
             ...bounds

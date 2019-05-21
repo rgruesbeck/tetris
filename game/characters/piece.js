@@ -24,7 +24,7 @@ import {
 import Block from '../characters/block.js';
 
 class Piece {
-    constructor({ ctx, board, image, color, cellSize, cellBounds, bounds }) {
+    constructor({ ctx, board, image, color, shape, cellSize, cellBounds, bounds }) {
         this.ctx = ctx;
         this.board = board;
 
@@ -38,7 +38,7 @@ class Piece {
 
         this.placed = false;
 
-        this.body = this.createBody();
+        this.body = this.createBody(shape);
         this.box = { top: 0, right: 0, bottom: 0, left: 0 };
 
         this.shift({ x: 4, y: 0 });
@@ -91,7 +91,7 @@ class Piece {
 
     rotate() {
         // pick a rotation point
-        let origin = this.body[0];
+        let origin = this.body[1];
 
         // rotate block around origin
         this.body.forEach(block => {
@@ -100,6 +100,15 @@ class Piece {
 
         // shift in place to update x and y
         this.shift({ x: 0, y: 0 });
+    }
+
+    rotatedCells() {
+        let origin = this.body[1];
+        return this.body
+        .map(block => block.cell)
+        .map(cell => {
+            return this.rotateCellAround(cell, origin.cell);
+        })
     }
 
     rotateCellAround(cell, origin) {
@@ -115,7 +124,7 @@ class Piece {
             // rotate around origin
             let prev = arr[idx - 1] || arr[arr.length - 1];
             return {
-                x: prev.y,
+                x: -prev.y,
                 y: prev.x
             }
         })
@@ -129,29 +138,29 @@ class Piece {
         .reduce(cell => cell);
     }
 
-    selectShape() {
+    selectShape(idx) {
         // Tetriminos
 
         // Straight Bar
         const bar = [
-            { x: 2, y: 0 },
             { x: 0, y: 0 },
             { x: 1, y: 0 },
+            { x: 2, y: 0 },
             { x: 3, y: 0 }
         ];
 
         // Left L
         const leftL = [
-            { x: 0, y: 1 },
             { x: 0, y: 0 },
+            { x: 0, y: 1 },
             { x: 1, y: 1 },
             { x: 2, y: 1 }
         ];
 
         // Right L
         const rightL = [
-            { x: 2, y: 1 },
             { x: 1, y: 1 },
+            { x: 2, y: 1 },
             { x: 3, y: 1 },
             { x: 3, y: 0 }
         ];
@@ -159,8 +168,8 @@ class Piece {
         // Box
         const box = [
             { x: 0, y: 0 },
-            { x: 1, y: 0 },
             { x: 0, y: 1 },
+            { x: 1, y: 0 },
             { x: 1, y: 1 }
         ];
 
@@ -188,7 +197,7 @@ class Piece {
             { x: 2, y: 1 }
         ];
 
-        return pickFromList([
+       return [
             bar,
             leftL,
             rightL,
@@ -196,11 +205,11 @@ class Piece {
             leftS,
             rightS,
             tee
-        ])
+       ][idx];
     }
 
-    createBody() {
-        return this.selectShape()
+    createBody(idx) {
+        return this.selectShape(idx)
         .map(cell => {
             return new Block({
                 ctx: this.ctx,
@@ -212,6 +221,7 @@ class Piece {
             })
         })
     }
+
 }
 
 export default Piece;

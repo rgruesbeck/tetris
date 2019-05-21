@@ -18,18 +18,21 @@
 }
 
 #gameScreen {
-    background: #eee;
     display: block;
     margin: auto;
+    z-index: 0;
     transition: opacity 1s;
 }
 
 #gameBoard {
-    background: #eee;
     position: absolute;
-    top: 4em;
-    left: calc(100vw / 4);
-    z-index: 0;
+    z-index: 1;
+    transition: opacity 2s;
+}
+
+#gameEffects {
+    position: absolute;
+    z-index: 2;
     transition: opacity 2s;
 }
 
@@ -37,6 +40,7 @@
     position: absolute;
     top: 0;
     left: 0;
+    z-index: 3;
     width: 100vw;
     height: 100vh;
 }

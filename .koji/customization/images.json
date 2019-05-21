@@ -1,8 +1,14 @@
 {
   "images": {
-    "playerImage": "https://i.imgur.com/LHdhmon.png",
-    "butterflyImage": "https://i.imgur.com/kUPI7H8.png",
-    "backgroundImage": "https://i.imgur.com/72Cipks.png"
+    "backgroundImage": "https://i.imgur.com/72Cipks.png",
+    "block1": "https://i.imgur.com/OJNg5O8.png",
+    "block2": "https://i.imgur.com/wmeM3p1.png",
+    "block3": "https://i.imgur.com/Abs3tHk.png",
+    "block4": "https://i.imgur.com/vL4yxTA.png",
+    "block5": "https://i.imgur.com/tXzWS9n.png",
+    "block6": "https://i.imgur.com/6qpRxbZ.png",
+    "spectatorLeft": "https://i.imgur.com/LKxmo50.png",
+    "spectatorRight": "https://i.imgur.com/bNBEDeu.png"
   },
   "@@editor": [
     {
