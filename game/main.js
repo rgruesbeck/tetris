@@ -320,8 +320,7 @@ class Game {
         this.boardCtx.fillRect(0, 0, this.boardCanvas.width, this.boardCanvas.height);
 
         // clear effects of the last picture
-        this.effectsCtx.fillStyle = 'red'; 
-        this.effectsCtx.fillRect(0, 0, this.effectsCanvas.width, this.effectsCanvas.height);
+        this.effectsCtx.clearRect(0, 0, this.effectsCanvas.width, this.effectsCanvas.height);
 
         // draw and do stuff that you need to do
         // no matter the game state
@@ -332,6 +331,7 @@ class Game {
             this.overlay.hide('loading');
             this.canvas.style.opacity = 1;
             this.boardCanvas.style.opacity = 1;
+            this.effectsCanvas.style.opacity = 1;
 
             this.overlay.setBanner(this.config.settings.name);
             this.overlay.setButton(this.config.settings.startText);
@@ -498,7 +498,7 @@ class Game {
                         .filter(block => block.cell.y === fullRows[0])
                         .map(block => {
                             return new ImageSprite({
-                                ctx: this.ctx,
+                                ctx: this.effectsCtx,
                                 image: block.image,
                                 x: block.x,
                                 y: block.y,
@@ -547,7 +547,7 @@ class Game {
             this.cleared = [
                 ...this.cleared
                 .map((sprite, idx) => {
-                    let dx = idx % 2 === 0 ? 1 : -1;
+                    let dx = idx % 2 === 0 ? 0.5 : -0.5;
                     let dy = idx % 3 === 0 ? -1 : -1.5;
 
                     sprite.move(dx, dy, this.frame.scale);
@@ -559,7 +559,6 @@ class Game {
                 .filter(sprite => sprite.x < this.screen.right)
             ]
 
-            console.log(this.cleared);
             // draw cleared
             this.cleared
             .forEach(sprite => sprite.draw());
