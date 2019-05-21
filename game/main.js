@@ -311,9 +311,8 @@ class Game {
         // update game characters
 
         // clear the screen of the last picture
-        // this.ctx.fillStyle = this.config.colors.backgroundColor; 
-        // this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.fillStyle = this.config.colors.backgroundColor; 
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
         // clear the board of the last picture
         this.boardCtx.fillStyle = this.config.colors.boardColor; 

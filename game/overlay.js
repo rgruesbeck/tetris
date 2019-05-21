@@ -56,11 +56,11 @@ class Overlay {
         if( /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) ) {
             // show mobile instructions
 
-            this.instructions.textContent = mobile;
+            this.instructions.innerHTML = mobile;
         } else {
             // show desktop instructions
 
-            this.instructions.textContent = desktop;
+            this.instructions.innerHTML = desktop;
         }
         this.show('instructions');
     }
