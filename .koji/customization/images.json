@@ -1,6 +1,5 @@
 {
   "images": {
-    "backgroundImage": "https://i.imgur.com/72Cipks.png",
     "block1": "https://i.imgur.com/OJNg5O8.png",
     "block2": "https://i.imgur.com/wmeM3p1.png",
     "block3": "https://i.imgur.com/Abs3tHk.png",
@@ -18,15 +17,51 @@
       "source": "images.json",
       "fields": [
         {
-          "key": "playerImage",
-          "name": "Player Image",
-          "description": "Player image",
+          "key": "block1",
+          "name": "Block 1 Image",
+          "description": "Image for block 1",
           "type": "image"
         },
         {
-          "key": "backgroundImage",
-          "name": "Background Image",
-          "description": "Background image",
+          "key": "block2",
+          "name": "Block 2 Image",
+          "description": "Image for block 2",
+          "type": "image"
+        },
+        {
+          "key": "block3",
+          "name": "Block 3 Image",
+          "description": "Image for block 3",
+          "type": "image"
+        },
+        {
+          "key": "block4",
+          "name": "Block 4 Image",
+          "description": "Image for block 4",
+          "type": "image"
+        },
+        {
+          "key": "block5",
+          "name": "Block 5 Image",
+          "description": "Image for block 5",
+          "type": "image"
+        },
+        {
+          "key": "block6",
+          "name": "Block 6 Image",
+          "description": "Image for block 6",
+          "type": "image"
+        },
+        {
+          "key": "spectatorLeft",
+          "name": "Left Spectator Image",
+          "description": "Image for left spectator",
+          "type": "image"
+        },
+        {
+          "key": "spectatorRight",
+          "name": "Right Spectator Image",
+          "description": "Image for right spectator",
           "type": "image"
         }
       ]

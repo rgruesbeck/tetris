@@ -7,7 +7,7 @@
       "instructionsDesktop": "Use arrow keys to move: [ ⇠ ⇢ ⇣ ] </br> Up arrow key to rotate [ ⇡ ] </br> Spacebar to drop.",
       "gameTopBar": false,
       "tickRate": 30,
-      "columns": 10,
+      "columns": 4,
       "rows": 20,
       "fontFamily": "Pattaya"
     },
@@ -50,7 +50,7 @@
           },
           {
             "key": "columns",
-            "name": "Number of columns.",
+            "name": "Number of columns. Must have a minimum of 4",
             "type": "boolean"
           },
           {

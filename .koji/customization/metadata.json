@@ -1,11 +1,11 @@
 {
   "metadata": {
     "title": "Tetris",
-    "description": "Classic puzzle game. Easily customizable at gokoji.com.",
-    "image": "https://i.imgur.com/1VTl2r7.png",
-    "icon": "https://via.placeholder.com",
-    "icon192": "https://via.placeholder.com/192",
-    "icon512": "https://via.placeholder.com/512",
+    "description": "The legendary puzzle game. Easily customizable at gokoji.com.",
+    "image": "https://images.koji-cdn.com/template-assets/e97fa0d1-937f-438b-9034-0072a693c560_1558462194087.png",
+    "icon": "https://images.koji-cdn.com/template-assets/e97fa0d1-937f-438b-9034-0072a693c560_1558462194087.png",
+    "icon192": "https://images.koji-cdn.com/template-assets/e97fa0d1-937f-438b-9034-0072a693c560_1558462194087.png?w=192",
+    "icon512": "https://images.koji-cdn.com/template-assets/e97fa0d1-937f-438b-9034-0072a693c560_1558462194087.png?w=512",
     "gaCode": ""
   },
   "@@editor": [

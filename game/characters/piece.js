@@ -41,7 +41,10 @@ class Piece {
         this.body = this.createBody(shape);
         this.box = { top: 0, right: 0, bottom: 0, left: 0 };
 
-        this.shift({ x: 4, y: 0 });
+        // shift to center
+        console.log('board', board);
+        let center = Math.round((board.columns / 2) - (this.body.length / 2));
+        this.shift({ x: center, y: 0 });
     }
 
     draw() {
@@ -91,7 +94,7 @@ class Piece {
 
     rotate() {
         // pick a rotation point
-        let origin = this.body[1];
+        let origin = this.body[0];
 
         // rotate block around origin
         this.body.forEach(block => {
@@ -103,7 +106,7 @@ class Piece {
     }
 
     rotatedCells() {
-        let origin = this.body[1];
+        let origin = this.body[0];
         return this.body
         .map(block => block.cell)
         .map(cell => {
@@ -143,24 +146,24 @@ class Piece {
 
         // Straight Bar
         const bar = [
-            { x: 0, y: 0 },
             { x: 1, y: 0 },
+            { x: 0, y: 0 },
             { x: 2, y: 0 },
             { x: 3, y: 0 }
         ];
 
         // Left L
         const leftL = [
-            { x: 0, y: 0 },
-            { x: 0, y: 1 },
             { x: 1, y: 1 },
+            { x: 0, y: 1 },
+            { x: 0, y: 0 },
             { x: 2, y: 1 }
         ];
 
         // Right L
         const rightL = [
-            { x: 1, y: 1 },
             { x: 2, y: 1 },
+            { x: 1, y: 1 },
             { x: 3, y: 1 },
             { x: 3, y: 0 }
         ];
@@ -175,25 +178,25 @@ class Piece {
 
         // Left S
         const leftS = [
+            { x: 1, y: 1 },
             { x: 1, y: 0 },
             { x: 0, y: 1 },
-            { x: 1, y: 1 },
             { x: 2, y: 0 }
         ];
 
         // Right S
         const rightS = [
+            { x: 1, y: 1 },
             { x: 1, y: 0 },
             { x: 0, y: 0 },
-            { x: 1, y: 1 },
             { x: 2, y: 1 }
         ];
 
         // Tee
         const tee = [
+            { x: 1, y: 1 },
             { x: 1, y: 0 },
             { x: 0, y: 1 },
-            { x: 1, y: 1 },
             { x: 2, y: 1 }
         ];
 
