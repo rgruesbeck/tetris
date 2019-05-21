@@ -102,11 +102,13 @@ class Game {
         document.addEventListener('keydown', ({ code }) => this.handleKeyboardInput('keydown', code));
         document.addEventListener('keyup', ({ code }) => this.handleKeyboardInput('keyup', code));
 
-        // setup event listeners for mouse movement
-        document.addEventListener('mousemove', ({ clientY }) => this.handleMouseMove(clientY));
+        // handle swipes
+        document.addEventListener('touchstart', ({ touches }) => this.handleSwipeInput('touchstart', touches[0]), false);
+        document.addEventListener('touchmove', ({ touches }) => this.handleSwipeInput('touchmove', touches[0]), false);
+        document.addEventListener('touchend', ({ touches }) => this.handleSwipeInput('touchend', touches[0]), false);
 
-        // setup event listeners for mouse movement
-        document.addEventListener('touchmove', ({ touches }) => this.handleTouchMove(touches[0]));
+        // handle taps
+        document.addEventListener('touchstart', ({ touches }) => this.handleTap(touches[0]));
 
         // handle overlay clicks
         this.overlay.root.addEventListener('click', ({ target }) => this.handleClicks(target));
@@ -832,9 +834,10 @@ class Game {
             if (code === 'Space') {
                 this.dropPiece();
             }
+
         }
 
-        if (type === 'keyup') {
+        if (type === 'keydown') {
 
             // any key
             // reload when game over
@@ -847,19 +850,91 @@ class Game {
                 this.setState({ current: 'play' });
             }
         }
+
+        if (type === 'keyup') {
+
+        }
     }
 
-    handleMouseMove(y) {
-        this.input.active = 'mouse';
-        this.input.mouse.y = y;
+    handleTap() {
+        // rotate
+        let now = Date.now();
+        let time = now - this.lastTap;
+
+        if ((time < 300) && (time > 0)) {
+            // rotate on double tap   
+            this.queueTick(0, () => this.rotatePiece());
+        }
+
+        this.lastTap = Date.now();
     }
 
-    handleTouchMove(touch) {
-        let { clientX, clientY } = touch;
+    // convert swipe to a direction
+    handleSwipeInput(type, touch) {
 
-        this.input.active = 'touch';
-        this.input.touch.x = clientX;
-        this.input.touch.y = clientY;
+        // clear touch list
+        if (type === 'touchstart') {
+            this.input.touches = [];
+        }
+
+        // add to touch list
+        if (type === 'touchmove') {
+            let { clientX, clientY } = touch;
+            this.input.touches.push({ x: clientX, y: clientY });
+        }
+
+        // get user intention
+        if (type === 'touchend') {
+            let { touches } = this.input;
+            let result = {};
+
+            if (touches.length) {
+
+                // get direction from touches
+                result = this.input.touches
+                .map((touch, idx, arr) => {
+                    // collect diffs
+                    let prev = arr[idx - 1] || arr[0];
+                    return {
+                        x: touch.x,
+                        y: touch.y,
+                        dx: touch.x - prev.x,
+                        dy: touch.y - prev.y
+                    }
+                })
+                .reduce((direction, diff) => {
+                    // sum the diffs
+                    direction.dx += diff.dx;
+                    direction.dy += diff.dy;
+
+                    return direction;
+                });
+
+                // get direction
+                let swipesX = Math.abs(result.dx) > Math.abs(result.dy);
+                let swipesY = Math.abs(result.dy) > Math.abs(result.dx);
+
+                if (swipesX) {
+                    if (result.dx > 0) {
+                        // swipe right: shift right
+                        this.queueTick(0, () => this.shiftPieceRight());
+                    } else {
+                        // swipe left: shift left
+                        this.queueTick(0, () => this.shiftPieceLeft());
+                    }
+                }
+
+                if (swipesY) {
+                    if (result.dy > 0) {
+                        // swipe down: drop
+                        this.dropPiece();
+                    } else {
+                        // swipe up: rotate
+                        // this.queueTick(0, () => this.rotatePiece());
+                    }
+                }
+            }
+        }
     }
 
     handleResize() {
