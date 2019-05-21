@@ -33,6 +33,41 @@
           "key": "backgroundColor",
           "name": "Background color",
           "type": "color"
+        },
+        {
+          "key": "boardColor",
+          "name": "Board Color",
+          "type": "color"
+        },
+        {
+          "key": "block1",
+          "name": "Block 1 Color",
+          "type": "color"
+        },
+        {
+          "key": "block2",
+          "name": "Block 2 Color",
+          "type": "color"
+        },
+        {
+          "key": "block3",
+          "name": "Block 3 Color",
+          "type": "color"
+        },
+        {
+          "key": "block4",
+          "name": "Block 4 Color",
+          "type": "color"
+        },
+        {
+          "key": "block5",
+          "name": "Block 5 Color",
+          "type": "color"
+        },
+        {
+          "key": "block6",
+          "name": "Block 6 Color",
+          "type": "color"
         }
       ]
     }

@@ -5,7 +5,7 @@
       "gameoverText": "Game Over",
       "instructionsMobile": "Swipe to left and right to move </br> double-tap to rotate </br> swipe down to drop",
       "instructionsDesktop": "Use arrow keys to move: [ ⇠ ⇢ ⇣ ] </br> Up arrow key to rotate [ ⇡ ] </br> Spacebar to drop.",
-      "gameTopBar": true,
+      "gameTopBar": false,
       "tickRate": 30,
       "columns": 10,
       "rows": 20,
@@ -41,6 +41,21 @@
           {
             "key": "gameTopBar",
             "name": "If game should have a top bar or not",
+            "type": "boolean"
+          },
+          {
+            "key": "tickRate",
+            "name": "Games speed in ticks per frame. 60 equals 1 tick per second.",
+            "type": "boolean"
+          },
+          {
+            "key": "columns",
+            "name": "Number of columns.",
+            "type": "boolean"
+          },
+          {
+            "key": "columns",
+            "name": "Number of rows.",
             "type": "boolean"
           },
           {
