@@ -19,49 +19,49 @@
         {
           "key": "block1",
           "name": "Block 1 Image",
-          "description": "Image for block 1",
+          "description": "Image for block 1. Square images work best.",
           "type": "image"
         },
         {
           "key": "block2",
           "name": "Block 2 Image",
-          "description": "Image for block 2",
+          "description": "Image for block 2. Square images work best.",
           "type": "image"
         },
         {
           "key": "block3",
           "name": "Block 3 Image",
-          "description": "Image for block 3",
+          "description": "Image for block 3. Square images work best.",
           "type": "image"
         },
         {
           "key": "block4",
           "name": "Block 4 Image",
-          "description": "Image for block 4",
+          "description": "Image for block 4. Square images work best.",
           "type": "image"
         },
         {
           "key": "block5",
           "name": "Block 5 Image",
-          "description": "Image for block 5",
+          "description": "Image for block 5. Square images work best.",
           "type": "image"
         },
         {
           "key": "block6",
           "name": "Block 6 Image",
-          "description": "Image for block 6",
+          "description": "Image for block 6. Square images work best.",
           "type": "image"
         },
         {
           "key": "spectatorLeft",
           "name": "Left Spectator Image",
-          "description": "Image for left spectator",
+          "description": "Image for left spectator. Square images work best.",
           "type": "image"
         },
         {
           "key": "spectatorRight",
           "name": "Right Spectator Image",
-          "description": "Image for right spectator",
+          "description": "Image for right spectator. Square images work best.",
           "type": "image"
         }
       ]
