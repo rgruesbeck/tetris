@@ -1,15 +1,15 @@
 {
     "settings": {
-      "name": "Game",
+      "name": "Tetris Tropics",
       "startText": "Start",
-      "gameoverText": "Game Over",
+      "gameoverText": "Game Overrr",
       "instructionsMobile": "Swipe to left and right to move </br> double-tap to rotate </br> swipe down to drop",
       "instructionsDesktop": "Use arrow keys to move: [ ⇠ ⇢ ⇣ ] </br> Up arrow key to rotate [ ⇡ ] </br> Spacebar to drop.",
       "gameTopBar": false,
       "tickRate": 30,
       "columns": 10,
       "rows": 20,
-      "fontFamily": "Bungee Inline"
+      "fontFamily": "Pattaya"
     },
     "@@editor": [
       {

@@ -116,7 +116,7 @@ class Game {
         // handle resize events
         window.addEventListener('resize', () => this.handleResize());
         window.addEventListener("orientationchange", (e) => this.handleResize(e));
-        
+
         // handle koji config changes
         Koji.on('change', (scope, key, value) => {
             console.log('updating configs...', scope, key, value);
@@ -305,6 +305,14 @@ class Game {
             bounds: this.screen
         })
 
+        // hack for seamless audio looping
+        this.sounds.backgroundMusic.addEventListener('timeupdate', function(){
+            let buffer = 0.32;
+            if(this.currentTime > this.duration - buffer){
+                this.currentTime = 0
+                this.play()
+            }}, false);
+
         this.setState({ current: 'ready' });
         this.play();
     }
@@ -325,7 +333,7 @@ class Game {
 
         // draw and do stuff that you need to do
         // no matter the game state
-        // this.ctx.drawImage(this.images.backgroundImage, 0, 0, this.canvas.width, this.canvas.height);
+        this.overlay.setScore(this.state.score);
 
         // ready to play
         if (this.state.current === 'ready') {
@@ -492,6 +500,9 @@ class Game {
                     // set cleared stamp
                     this.board.lastClear = Date.now();
 
+                    // award points
+                    this.setState({ score: this.state.score + 100 });
+
                     // images from cleared line to cleared
                     // as image sprites
                     this.cleared = [
@@ -597,7 +608,7 @@ class Game {
         if (this.state.current === 'over') {
 
             this.sounds.backgroundMusic.pause();
-            this.overlay.setBanner('Game Over');
+            this.overlay.setBanner(this.config.settings.gameoverText);
         }
 
         // draw the next screen
