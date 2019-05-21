@@ -236,6 +236,8 @@ class Game {
             loadImage('spectatorLeft', this.config.images.spectatorLeft),
             loadImage('spectatorRight', this.config.images.spectatorRight),
             loadImage('backgroundImage', this.config.images.backgroundImage),
+            loadSound('clearSound', this.config.sounds.clearSound),
+            loadSound('dropSound', this.config.sounds.dropSound),
             loadSound('backgroundMusic', this.config.sounds.backgroundMusic),
             loadFont('gameFont', this.config.settings.fontFamily)
         ];
@@ -334,6 +336,33 @@ class Game {
         // draw and do stuff that you need to do
         // no matter the game state
         this.overlay.setScore(this.state.score);
+
+        // draw spectators
+        if (this.spectatorSize > 50) {
+
+            // draw spectators
+            let now = Date.now();
+            let cheer = Math.cos(this.frame.count / 5);
+            if (now - this.board.lastClear < 3000) {
+                // cheer more
+                cheer = Math.cos(this.frame.count / 3) * 3;
+
+                this.leftSpectator.height += cheer;
+                this.rightSpectator.height += cheer;
+            }
+
+            // reset height
+            this.leftSpectator.height = this.spectatorSize;
+            this.rightSpectator.height = this.spectatorSize;
+
+            // cheer
+            this.leftSpectator.move(0, cheer, this.frame.scale);
+            this.rightSpectator.move(0, cheer, this.frame.scale);
+
+            this.leftSpectator.draw();
+            this.rightSpectator.draw();
+
+        }
 
         // ready to play
         if (this.state.current === 'ready') {
@@ -506,14 +535,15 @@ class Game {
                     // images from cleared line to cleared
                     // as image sprites
                     this.cleared = [
+                        ...this.cleared,
                         ...this.stack
                         .filter(block => block.cell.y === fullRows[0])
                         .map(block => {
                             return new ImageSprite({
                                 ctx: this.effectsCtx,
                                 image: block.image,
-                                x: block.x,
-                                y: block.y,
+                                x: block.x + this.boardCanvas.offsetLeft,
+                                y: block.y + this.boardCanvas.offsetTop,
                                 width: block.width,
                                 height: block.height,
                                 speed: 5,
@@ -543,6 +573,7 @@ class Game {
                         })
                     ]
 
+                    this.sounds.clearSound.play();
 
                     // queue shift down for blocks in the stack
                     this.queueTick(1, () => this.shiftStackDown());
@@ -575,27 +606,6 @@ class Game {
             this.cleared
             .forEach(sprite => sprite.draw());
 
-            // draw spectators
-            let now = Date.now();
-            let cheer = Math.cos(this.frame.count / 5);
-            if (now - this.board.lastClear < 3000) {
-                // cheer more
-                cheer = Math.cos(this.frame.count / 3) * 3;
-
-                this.leftSpectator.height += cheer;
-                this.rightSpectator.height += cheer;
-            }
-
-            // reset height
-            this.leftSpectator.height = this.spectatorSize;
-            this.rightSpectator.height = this.spectatorSize;
-
-            // cheer
-            this.leftSpectator.move(0, cheer, this.frame.scale);
-            this.rightSpectator.move(0, cheer, this.frame.scale);
-
-            this.leftSpectator.draw();
-            this.rightSpectator.draw();
 
         }
 
@@ -770,6 +780,8 @@ class Game {
         for (let row = 0; row < minShift; row += 1) {
             this.queueTick(0, () => this.shiftPieceDown());
         }
+
+        this.sounds.dropSound.play();
     }
 
     updatePieces(fn) {

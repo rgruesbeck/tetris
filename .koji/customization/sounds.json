@@ -1,21 +1,35 @@
 {
-    "sounds": {
-      "backgroundMusic": "https://objects.koji-cdn.com/9b2a9ca8-991f-466c-8abb-228a9c23350a/TetrisSalsamp3"
-    },
-    "@@editor": [
-      {
-        "key": "sounds",
-        "name": "Sounds",
-        "icon": "🔊️",
-        "source": "sounds.json",
-        "fields": [
-          {
-            "key": "backgroundMusic",
-            "name": "Background Music",
-            "description": "Music to loop in background",
-            "type": "sound"
-          }
-        ]
-      }
-    ]
-  }
+  "sounds": {
+    "backgroundMusic": "https://objects.koji-cdn.com/9b2a9ca8-991f-466c-8abb-228a9c23350a/TetrisSalsamp3",
+    "clearSound": "https://objects.koji-cdn.com/421c16c3-f67f-4636-aab2-84b65741064a/sparklemp3",
+    "dropSound": "https://objects.koji-cdn.com/421c16c3-f67f-4636-aab2-84b65741064a/whoosh3mp3"
+  },
+  "@@editor": [
+    {
+      "key": "sounds",
+      "name": "Sounds",
+      "icon": "🔊️",
+      "source": "sounds.json",
+      "fields": [
+        {
+          "key": "backgroundMusic",
+          "name": "Background Music",
+          "description": "Music to loop in background",
+          "type": "sound"
+        },
+        {
+          "key": "clearSound",
+          "name": "Clear Sound",
+          "description": "Sound for clearing a row",
+          "type": "sound"
+        },
+        {
+          "key": "dropSound",
+          "name": "Drop Sound",
+          "description": "Sound for dropping a piece",
+          "type": "sound"
+        }
+      ]
+    }
+  ]
+}
