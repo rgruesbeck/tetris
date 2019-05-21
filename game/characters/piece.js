@@ -42,7 +42,6 @@ class Piece {
         this.box = { top: 0, right: 0, bottom: 0, left: 0 };
 
         // shift to center
-        console.log('board', board);
         let center = Math.round((board.columns / 2) - (this.body.length / 2));
         this.shift({ x: center, y: 0 });
     }

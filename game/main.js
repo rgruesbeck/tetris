@@ -222,6 +222,11 @@ class Game {
 
     load() {
         // load pictures, sounds, and fonts
+        // stop background music if playing
+        if (this.sounds && this.sounds.backgroundMusic) {
+
+            this.sounds.backgroundMusic.pause();
+        }
 
         this.init(); // apply new configs
         
