@@ -2,8 +2,8 @@
  * game/character/stack.js
  * 
  * What it Does:
- *   This file is a basic player character
- *   it extends the imageSprite class and adds two collision detections methods
+ *   This file is a class for the stacked blocks
+ *   and contains a shift method
  * 
  * What to Change:
  *   Add any character specific methods
@@ -29,10 +29,6 @@ class Stack {
 
         this.x = this.cell.x * this.size;
         this.y = this.cell.y * this.size;
-    }
-
-    draw() {
-        // 
     }
 
     shift({ x = 0, y = 0 }) {

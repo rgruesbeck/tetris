@@ -35,12 +35,8 @@ import {
 } from './helpers/assetLoaders.js';
 
 import {
-    pickFromList, getMinFromList
+    pickFromList
 } from './utils/baseUtils.js';
-
-import {
-    padBounds
-} from './utils/spriteUtils.js';
 
 import {
     gridRow,
@@ -48,8 +44,7 @@ import {
     neighborLeft,
     neighborRight,
     setGridCell,
-    getCellSize,
-    gridCell
+    getCellSize
 } from './utils/gridUtils.js';
 
 import Piece from './characters/piece.js';

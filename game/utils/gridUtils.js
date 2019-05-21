@@ -2,26 +2,7 @@
  * game/utils/gridUtils.js
  * 
  * What it Does:
- *   This file contains utilities for the game
- * 
- *   randomBetween: get a numbers a min and a max, optionally ask for an int
- * 
- *   getDistance: get the distance between to points with an x and y
- * 
- *   bounded: apply a lower and upper bound to a number
- *   useful for add limits to AI character movements
- * 
- *   isBounded: check if number is within a min and max
- * 
- *   getCursorPosition: get cursor position on the canvas
- *   needed for when tob bar is active
- * 
- *   hexToRgbA: color converter for easier use of the alpha channel
- * 
- *   throttled: wraps a function so that it can't be called until the delay
- *   in milliseconds has gone by. useful for stopping unwanted side effects of button mashing.
- *   https://gph.is/1syA0yc
- * 
+ *   This file contains grid related utilities for the game
  * 
  * What to Change:
  *   Add any new methods that don't fit anywhere else

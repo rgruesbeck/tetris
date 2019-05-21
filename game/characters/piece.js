@@ -2,8 +2,7 @@
  * game/character/piece.js
  * 
  * What it Does:
- *   This file is a basic player character
- *   it extends the imageSprite class and adds two collision detections methods
+ *   This file implements a tetromino with shift, draw, and rotate methods
  * 
  * What to Change:
  *   Add any character specific methods
@@ -12,7 +11,6 @@
  */
 
 import {
-    pickFromList,
     getMaxFromList,
     getMinFromList,
 } from '../utils/baseUtils.js';

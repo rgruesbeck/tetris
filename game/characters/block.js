@@ -2,8 +2,7 @@
  * game/character/block.js
  * 
  * What it Does:
- *   This file is a basic player character
- *   it extends the imageSprite class and adds two collision detections methods
+ *   This file implements a block in the a piece with a shift and draw method
  * 
  * What to Change:
  *   Add any character specific methods

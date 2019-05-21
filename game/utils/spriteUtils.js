@@ -2,7 +2,7 @@
  * game/utils/spriteUtils.js
  * 
  * What it Does:
- *   This file contains utilities for sprites
+ *   This file contains sprite related utilities for sprites
  * 
  *   inBox: check if coordinate is in box
  * 

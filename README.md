@@ -24,8 +24,8 @@ This directory holds the game code.
 ### ~/game/characters
 This directory contains code for the game characters.
 - [Block: game/characters/block.js](#~/game/characters/block.js)
-- [Tetromino: game/characters/obstacle.js](#~/game/characters/piece.js)
-- [Stack: game/characters/token.js](#~/game/characters/stack.js)
+- [Tetromino: game/characters/piece.js](#~/game/characters/piece.js)
+- [Stack: game/characters/stack.js](#~/game/characters/stack.js)
 
 ### ~/game/objects
 This directory contains code base classes like image, sprite, etc.
