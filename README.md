@@ -29,9 +29,9 @@ This directory holds the game code.
 
 ### ~/game/characters
 This directory contains code for the game characters.
-- [Block: game/characters/block.js](#~/game/characters/block.js) a block class.
-- [Tetromino: game/characters/piece.js](#~/game/characters/piece.js) a class for a tetris piece.
-- [Stack: game/characters/stack.js](#~/game/characters/stack.js) a class for stacked blocks.
+- [Block: game/characters/block.js](#~/game/characters/block.js) code for the individual blocks.
+- [Tetromino: game/characters/piece.js](#~/game/characters/piece.js) code for the piece.
+- [Stack: game/characters/stack.js](#~/game/characters/stack.js) code for stacked of blocks.
 
 ### ~/game/objects
 This directory contains code base classes like image, sprite, etc.
@@ -41,13 +41,13 @@ This directory contains code base classes like image, sprite, etc.
 ### ~/game/helpers
 This directory contains helper code for loading assets and and requesting frames.
 - [assetLoaders: game/helpers/assetLoaders.js](#~/game/helpers/assetLoaders.js) a collections of functions to help load image, sound, and font assets.
-- [animationFrame: game/helpers/sprite.js](#~/game/helpers/animationFrame.js) a shim for requestAnimationFrame, the browsers method for asking for a new frame. Browsers request around 60 frames per second depending on resources.
+- [animationFrame: game/helpers/animationFrame.js](#~/game/helpers/animationFrame.js) a shim for requestAnimationFrame, the browsers method for asking for a new frame. Browsers request around 60 frames per second depending on resources.
 
 ### ~/game/utils
 This directory contains utility code for common functions.
 - [baseUtils: game/utils/baseUtils.js](#~/game/utils/baseUtils.js) a collection of useful functions for making games.
 - [spriteUtils: game/utils/spriteUtils.js](#~/game/utils/spriteUtils.js) a collection of useful sprite related functions to check hit-boxes or detect collisions.
-- [gridUtils: game/utils/spriteUtils.js](#~/game/utils/gridUtils.js) a collection of useful grid related functions to check neighbor cells, or calculate cellsize.
+- [gridUtils: game/utils/gridUtils.js](#~/game/utils/gridUtils.js) a collection of useful grid related functions to check neighbor cells, or calculate cellsize.
 
 ## Support
 ### Community
