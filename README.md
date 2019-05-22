@@ -51,7 +51,7 @@ This directory contains utility code for common functions.
 
 ## Support
 ### Community
-If you need any help, you can ask the community by [making a post](https://gokoji.com/posts), [joining the discord](https://discordapp.com/invite/eQuMJF6).
+If you need any help, you can ask the community by [making a post](https://gokoji.com/posts), or [joining the discord](https://discordapp.com/invite/eQuMJF6).
 
 ### Helpful Resources
 - [Mozilla Game Development Docs](https://developer.mozilla.org/en-US/docs/Games).
