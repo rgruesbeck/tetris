@@ -34,6 +34,7 @@ class Piece {
 
         this.cellSize = cellSize;
 
+        this.preplaceTick = 0;
         this.placed = false;
 
         this.body = this.createBody(shape);
@@ -72,11 +73,6 @@ class Piece {
         // don't shift off the board
         let hitLeft = this.box.left + x < 0;
         let hitRight = this.box.right + x > this.board.width - 1;
-
-        // todo: something off here
-        let hitBottom = this.box.bottom > this.board.height - 2;
-
-        if (hitBottom) { this.placed = true; }
 
         if (this.placed || hitLeft || hitRight) {
             return;

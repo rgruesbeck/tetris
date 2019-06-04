@@ -81,6 +81,7 @@ class Game {
             prev: '',
             score: 0,
             tickRate: parseInt(this.config.settings.tickRate),
+            lockDelayTicks: parseInt(this.config.settings.lockDelayTicks),
             paused: false,
             muted: localStorage.getItem('game-muted') === 'true'
         };
@@ -146,8 +147,9 @@ class Game {
         };
 
         // set board size
-        //let cellSize = this.canvas.height / this.config.settings;
-        let { columns, rows } = this.config.settings;
+        let columns = parseInt(this.config.settings.columns);
+        let rows = parseInt(this.config.settings.rows);
+
         let cellSize = getCellSize(
             this.canvas.width,
             this.canvas.height,
@@ -645,20 +647,33 @@ class Game {
 
     shiftPieceDown() {
         this.updatePieces((piece) => {
+            // check for bottom
+            let hitBottom = piece.box.bottom > this.board.height - 2;
+
             // check for blocks below
             let hasDownNeighbor = piece.body
                 .some(block => {
                     return neighborDown(this.board.grid, block.cell);
                 })
 
-            if (!hasDownNeighbor) {
+
+            if (!hitBottom && !hasDownNeighbor) {
 
                 // shift down
                 piece.shift({ y: 1 });
             } else {
+                console.log(piece.preplaceTick);
 
-                // mark as placed
-                piece.placed = true;
+                if (piece.preplaceTick >= this.state.lockDelayTicks) {
+
+                    // mark as placed
+                    piece.placed = true;
+                } else {
+
+                    // increment preplaceTick
+                    piece.preplaceTick += 1;
+
+                }
             }
 
             return piece;

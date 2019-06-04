@@ -7,7 +7,8 @@
       "instructionsDesktop": "Use arrow keys to move: [ ⇠ ⇢ ⇣ ] </br> Up arrow key to rotate [ ⇡ ] </br> Spacebar to drop.",
       "gameTopBar": false,
       "tickRate": 30,
-      "columns": 10,
+      "lockDelayTicks": 1,
+      "columns": "10",
       "rows": 20,
       "fontFamily": "Pattaya"
     },
@@ -46,6 +47,10 @@
           {
             "key": "tickRate",
             "name": "Games speed in ticks per frame. 60 equals 1 tick per second."
+          },
+          {
+            "key": "lockDelayTicks",
+            "name": "Number of game ticks before piece is locked in current place."
           },
           {
             "key": "columns",
