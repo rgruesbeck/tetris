@@ -1,70 +1,77 @@
 {
-    "settings": {
-      "name": "Tetris",
-      "startText": "Start",
-      "gameoverText": "Game Over",
-      "instructionsMobile": "Swipe to left and right to move </br> double-tap to rotate </br> swipe down to drop",
-      "instructionsDesktop": "Use arrow keys to move: [ ⇠ ⇢ ⇣ ] </br> Up arrow key to rotate [ ⇡ ] </br> Spacebar to drop.",
-      "gameTopBar": false,
-      "tickRate": 30,
-      "lockDelayTicks": 1,
-      "columns": "10",
-      "rows": 20,
-      "fontFamily": "Pattaya"
-    },
-    "@@editor": [
-      {
-        "key": "settings",
-        "name": "Game settings",
-        "icon": "🎮",
-        "source": "settings.json",
-        "fields": [
-          {
-            "key": "name",
-            "name": "App name"
-          },
-          {
-            "key": "startText",
-            "name": "Start Button Text"
-          },
-          {
-            "key": "gameoverText",
-            "name": "Text to show when game over"
-          },
-          {
-            "key": "instructionsMobile",
-            "name": "How to play the game on mobile"
-          },
-          {
-            "key": "instructionsDesktop",
-            "name": "How to play the game on desktop"
-          },
-          {
-            "key": "gameTopBar",
-            "name": "If game should have a top bar or not",
-            "type": "boolean"
-          },
-          {
-            "key": "tickRate",
-            "name": "Games speed in ticks per frame. 60 equals 1 tick per second."
-          },
-          {
-            "key": "lockDelayTicks",
-            "name": "Number of game ticks before piece is locked in current place."
-          },
-          {
-            "key": "columns",
-            "name": "Number of columns. Must have a minimum of 4"
-          },
-          {
-            "key": "columns",
-            "name": "Number of rows."
-          },
-          {
-            "key": "fontFamily",
-            "name": "Font to use for text in the game"
-          }
-        ]
-      }
-    ]
-  }
+  "settings": {
+    "name": "Titres",
+    "startText": "Start",
+    "gameoverText": "Game Over",
+    "instructionsMobile": "Swipe to left and right to move </br> double-tap to rotate </br> swipe down to drop",
+    "instructionsDesktop": "Use arrow keys to move: [ ⇠ ⇢ ⇣ ] </br> Up arrow key to rotate [ ⇡ ] </br> Spacebar to drop.",
+    "gameTopBar": false,
+    "tickRate": 30,
+    "columns": 10,
+    "rows": 20,
+    "fontFamily": "Pattaya",
+    "lockDelayTicks": "1",
+    "modeInfinity": true
+  },
+  "@@editor": [
+    {
+      "key": "settings",
+      "name": "Game settings",
+      "icon": "🎮",
+      "source": "settings.json",
+      "fields": [
+        {
+          "key": "name",
+          "name": "App name"
+        },
+        {
+          "key": "startText",
+          "name": "Start Button Text"
+        },
+        {
+          "key": "gameoverText",
+          "name": "Text to show when game over"
+        },
+        {
+          "key": "instructionsMobile",
+          "name": "How to play the game on mobile"
+        },
+        {
+          "key": "instructionsDesktop",
+          "name": "How to play the game on desktop"
+        },
+        {
+          "key": "gameTopBar",
+          "name": "If game should have a top bar or not",
+          "type": "boolean"
+        },
+        {
+          "key": "tickRate",
+          "name": "Games speed in ticks per frame. 60 equals 1 tick per second."
+        },
+        {
+          "key": "lockDelayTicks",
+          "name": "Number of game ticks before piece is locked in current place."
+        },
+        {
+          "key": "modeInfinity",
+          "name": "Infinity mode",
+          "description": "Lock delay of a tetromino is reset whenever it is moved or rotated",
+          "type": "boolean"
+        },
+        {
+          "key": "columns",
+          "name": "Number of columns. Must have a minimum of 4"
+        },
+        {
+          "key": "columns",
+          "name": "Number of rows."
+        },
+        {
+          "key": "fontFamily",
+          "name": "Font to use for text in the game"
+        }
+      ]
+    }
+  ]
+}

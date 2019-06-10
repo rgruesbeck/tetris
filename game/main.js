@@ -82,6 +82,8 @@ class Game {
             score: 0,
             tickRate: parseInt(this.config.settings.tickRate),
             lockDelayTicks: parseInt(this.config.settings.lockDelayTicks),
+            modeInfinity: this.config.settings.modeInfinity,
+            infinityAction: false,
             paused: false,
             muted: localStorage.getItem('game-muted') === 'true'
         };
@@ -498,11 +500,15 @@ class Game {
 
             // schedule a tick to shift piece down by tick rate
             let scheduledTick = this.frame.count % this.state.tickRate === 0;
+            console.log(this.frame.count % this.state.tickRate)
             if (scheduledTick) {
-
+                // if an inifinity mode enabled piece moved or rotated action: 
                 // queue shift down for block in the piece
-                this.queueTick(1, () => this.shiftPieceDown());
-
+                if(!this.state.infinityAction) {
+                    this.queueTick(1, () => this.shiftPieceDown());
+                } else {
+                    this.setState({infinityAction: false})
+                }
 
                 // clear-line
                 // full rows of block get removed
@@ -847,6 +853,12 @@ class Game {
         this.input.active = 'keyboard';
 
         if (type === 'keydown' && this.state.current === 'play') {
+            // If infinity mode is enabled:
+            // Set flag that a key was pressed
+            if (this.state.modeInfinity) { 
+                    this.setState({infinityAction: true})
+            }
+
             // rotate
             if (code === 'ArrowUp') {
                 this.queueTick(0, () => this.rotatePiece());
@@ -859,7 +871,7 @@ class Game {
 
             // shift right
             if (code === 'ArrowRight') {
-                this.queueTick(0, () => this.shiftPieceRight());
+                this.queueTick(0, () => this.shiftPieceRight());                
             }
 
             // shift down
@@ -872,7 +884,6 @@ class Game {
             if (code === 'Space') {
                 this.dropPiece();
             }
-
         }
 
         if (type === 'keydown') {
@@ -900,6 +911,12 @@ class Game {
         let time = now - this.lastTap;
 
         if ((time < 300) && (time > 0)) {
+            // If infinity mode is enabled:
+            // Set flag that a key was pressed
+            if (this.state.modeInfinity) { 
+                    this.setState({infinityAction: true})
+            }
+            
             // rotate on double tap   
             this.queueTick(0, () => this.rotatePiece());
         }
@@ -909,6 +926,12 @@ class Game {
 
     // convert swipe to a direction
     handleSwipeInput(type, touch) {
+        // If infinity mode is enabled:
+        // Set flag that a tap was double pressed
+        if (this.state.modeInfinity) { 
+            this.setState({infinityAction: true})
+        }
+
 
         // clear touch list
         if (type === 'touchstart') {
