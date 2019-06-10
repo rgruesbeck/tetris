@@ -500,7 +500,7 @@ class Game {
 
             // schedule a tick to shift piece down by tick rate
             let scheduledTick = this.frame.count % this.state.tickRate === 0;
-            console.log(this.frame.count % this.state.tickRate)
+
             if (scheduledTick) {
                 // if an inifinity mode enabled piece moved or rotated action: 
                 // queue shift down for block in the piece
@@ -668,8 +668,6 @@ class Game {
                 // shift down
                 piece.shift({ y: 1 });
             } else {
-                console.log(piece.preplaceTick);
-
                 if (piece.preplaceTick >= this.state.lockDelayTicks) {
 
                     // mark as placed
