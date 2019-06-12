@@ -500,15 +500,10 @@ class Game {
 
             // schedule a tick to shift piece down by tick rate
             let scheduledTick = this.frame.count % this.state.tickRate === 0;
-
             if (scheduledTick) {
-                // if an inifinity mode enabled piece moved or rotated action: 
+                
                 // queue shift down for block in the piece
-                if(!this.state.infinityAction) {
-                    this.queueTick(1, () => this.shiftPieceDown());
-                } else {
-                    this.setState({infinityAction: false})
-                }
+                this.queueTick(1, () => this.shiftPieceDown());
 
                 // clear-line
                 // full rows of block get removed
@@ -668,12 +663,20 @@ class Game {
                 // shift down
                 piece.shift({ y: 1 });
             } else {
+                console.log(piece.preplaceTick);
+                
+                // if an inifinity mode enabled piece moved or rotated action, reset preplaceTick
+                if(this.state.infinityAction) {
+                    piece.preplaceTick = 0;
+                    this.setState({infinityAction: false}) 
+                }
+
                 if (piece.preplaceTick >= this.state.lockDelayTicks) {
 
                     // mark as placed
                     piece.placed = true;
                 } else {
-
+                    
                     // increment preplaceTick
                     piece.preplaceTick += 1;
 
