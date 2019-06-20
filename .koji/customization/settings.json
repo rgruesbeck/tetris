@@ -10,7 +10,8 @@
       "lockDelayTicks": 1,
       "columns": "10",
       "rows": 20,
-      "fontFamily": "Pattaya"
+      "fontFamily": "Pattaya",
+      "modeInfinity": true
     },
     "@@editor": [
       {
@@ -51,6 +52,12 @@
           {
             "key": "lockDelayTicks",
             "name": "Number of game ticks before piece is locked in current place."
+          },
+          {
+            "key": "modeInfinity",
+            "name": "Infinity mode",
+            "description": "Lock delay of a tetromino is reset whenever it is moved or rotated",
+            "type": "boolean"
           },
           {
             "key": "columns",
