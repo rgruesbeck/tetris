@@ -97,8 +97,8 @@ class Game {
 
         // setup event listeners
         // handle keyboard events
-        document.addEventListener('keydown', ({ code }) => this.handleKeyboardInput('keydown', code));
-        document.addEventListener('keyup', ({ code }) => this.handleKeyboardInput('keyup', code));
+        document.addEventListener('keydown', (e) => this.handleKeyboardInput('keydown', e.code, e));
+        document.addEventListener('keyup', (e) => this.handleKeyboardInput('keyup', e.code, e));
 
         // handle swipes
         document.addEventListener('touchstart', ({ touches }) => this.handleSwipeInput('touchstart', touches[0]), false);
@@ -850,7 +850,7 @@ class Game {
 
     }
 
-    handleKeyboardInput(type, code) {
+    handleKeyboardInput(type, code, event) {
         this.input.active = 'keyboard';
 
         if (type === 'keydown' && this.state.current === 'play') {
@@ -901,9 +901,8 @@ class Game {
             }
         }
 
-        if (type === 'keyup') {
-
-        }
+        // prevent scroll if in an iframe
+        event.stopPropagation();
     }
 
     handleTap() {
