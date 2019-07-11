@@ -32,10 +32,15 @@ import {
     loadImage,
     loadSound,
     loadFont
-} from './helpers/assetLoaders.js';
+} from 'game-asset-loader';
+
+import audioContext from 'audio-context';
+import audioPlayback from 'audio-play';
+import unlockAudioContext from 'unlock-audio-context';
 
 import {
-    pickFromList
+    pickFromList,
+    hashCode
 } from './utils/baseUtils.js';
 
 import {
@@ -57,6 +62,8 @@ class Game {
         this.overlay = overlay;
         this.topbar = topbar;
 
+        this.prefix = hashCode(this.config.settings.name); // set prefix for local-storage keys
+
         this.canvas = screen; // game screen
         this.ctx = screen.getContext("2d"); // game screen context
 
@@ -65,6 +72,9 @@ class Game {
 
         this.effectsCanvas = effects; // effects canvas
         this.effectsCtx = effects.getContext("2d"); // game effects context
+
+        this.audioCtx = audioContext(); // create new audio context
+        this.playlist = [];
 
         // frame count, rate, and time
         // this is just a place to keep track of frame rate (not set it)
@@ -123,6 +133,8 @@ class Game {
             this.load();
         });
 
+        // unlock audio context: audiocontext
+        unlockAudioContext(this.audioCtx);
     }
 
     init() {
@@ -221,10 +233,8 @@ class Game {
 
     load() {
         // load pictures, sounds, and fonts
-        // stop background music if playing
-        if (this.sounds && this.sounds.backgroundMusic) {
-
-            this.sounds.backgroundMusic.pause();
+        if (this.state.prev === 'over') {
+            this.overlay.setBanner('restarting...');
         }
 
         this.init(); // apply new configs
@@ -247,14 +257,17 @@ class Game {
         ];
 
         // put the loaded assets the respective containers
-        loadList(gameAssets)
+        loadList(gameAssets, (progress) => {
+            document.getElementById('loading-progress').textContent = `${progress.percent}%`;
+        })
         .then((assets) => {
 
             this.images = assets.image;
             this.sounds = assets.sound;
 
         })
-        .then(() => this.create());
+        .then(() => this.create())
+        .catch(err => console.error(err));
     }
 
     create() {
@@ -310,14 +323,6 @@ class Game {
             height: this.spectatorSize,
             bounds: this.screen
         })
-
-        // hack for seamless audio looping
-        this.sounds.backgroundMusic.addEventListener('timeupdate', function(){
-            let buffer = 0.32;
-            if(this.currentTime > this.duration - buffer){
-                this.currentTime = 0
-                this.play()
-            }}, false);
 
         this.setState({ current: 'ready' });
         this.play();
@@ -401,7 +406,19 @@ class Game {
             }
 
             // play background music
-            if (!this.state.muted) { this.sounds.backgroundMusic.play(); }
+            if (!this.state.muted && !this.state.backgroundMusic) {
+                let sound = this.sounds.backgroundMusic;
+                this.state.backgroundMusic = audioPlayback(sound, {
+                    start: 0,
+                    end: sound.duration,
+                    loop: true,
+                    context: this.audioCtx
+                });
+            }
+
+            if (!this.state.muted && this.state.backgroundMusic) {
+                this.state.backgroundMusic.play();
+            }
 
             // check for game over
             // game over if there are blocks on the top row
@@ -576,7 +593,7 @@ class Game {
                         })
                     ]
 
-                    this.sounds.clearSound.play();
+                    this.playback('clearSound', this.sounds.clearSound);
 
                     // queue shift down for blocks in the stack
                     this.queueTick(1, () => this.shiftStackDown());
@@ -620,7 +637,7 @@ class Game {
         // game over
         if (this.state.current === 'over') {
 
-            this.sounds.backgroundMusic.pause();
+            this.state.backgroundMusic.pause();
             this.overlay.setBanner(this.config.settings.gameoverText);
         }
 
@@ -663,7 +680,6 @@ class Game {
                 // shift down
                 piece.shift({ y: 1 });
             } else {
-                console.log(piece.preplaceTick);
                 
                 // if an inifinity mode enabled piece moved or rotated action, reset preplaceTick
                 if(this.state.infinityAction) {
@@ -803,7 +819,7 @@ class Game {
             this.queueTick(0, () => this.shiftPieceDown());
         }
 
-        this.sounds.dropSound.play();
+        this.playback('dropSound', this.sounds.dropSound);
     }
 
     updatePieces(fn) {
@@ -836,16 +852,12 @@ class Game {
         // button
         if ( target.id === 'button') {
             this.setState({ current: 'play' });
-
-            // if defaulting to have sound on by default
-            // double mute() to warmup iphone audio here
-            this.mute();
-            this.mute();
         }
 
         if (this.state.current === 'over') {
             // restart
-            this.load();
+            this.setState({ current: 'loading' });
+            this.reset();
         }
 
     }
@@ -880,7 +892,6 @@ class Game {
                 this.queueTick(0, () => this.shiftPieceDown());
             }
 
-
             // drop
             if (code === 'Space') {
                 this.dropPiece();
@@ -892,6 +903,7 @@ class Game {
             // any key
             // reload when game over
             if (this.state.current.match(/over/)) {
+                this.setState({ current: 'loading' });
                 this.load();
             }
 
@@ -1015,10 +1027,7 @@ class Game {
             this.cancelFrame(this.frame.count - 1);
 
             // mute all game sounds
-            Object.keys(this.sounds).forEach((key) => {
-                this.sounds[key].muted = true;
-                this.sounds[key].pause();
-            });
+            this.audioCtx.suspend();
 
             this.overlay.setBanner('Paused');
         } else {
@@ -1027,10 +1036,7 @@ class Game {
 
             // resume game sounds if game not muted
             if (!this.state.muted) {
-                Object.keys(this.sounds).forEach((key) => {
-                    this.sounds[key].muted = false;
-                    this.sounds.backgroundMusic.play();
-                });
+                this.audioCtx.resume();
             }
 
             this.overlay.hide('banner');
@@ -1039,7 +1045,7 @@ class Game {
 
     // mute game
     mute() {
-        let key = 'game-muted';
+        let key = this.prefix.concat('muted');
         localStorage.setItem(
             key,
             localStorage.getItem(key) === 'true' ? 'false' : 'true'
@@ -1050,21 +1056,45 @@ class Game {
 
         if (this.state.muted) {
             // mute all game sounds
-            Object.keys(this.sounds).forEach((key) => {
-                this.sounds[key].muted = true;
-                this.sounds[key].pause();
-            });
+            this.audioCtx.suspend();
         } else {
             // unmute all game sounds
-            // and play background music
-            // if game not paused
             if (!this.state.paused) {
-                Object.keys(this.sounds).forEach((key) => {
-                    this.sounds[key].muted = false;
-                    this.sounds.backgroundMusic.play();
-                });
+                this.audioCtx.resume();
             }
         }
+    }
+
+    playback(key, audioBuffer, options = {}) {
+        // add to playlist
+        let id = Math.random().toString(16).slice(2);
+        this.playlist.push({
+            id: id,
+            key: key,
+            playback: audioPlayback(audioBuffer, {
+                ...{
+                    start: 0,
+                    end: audioBuffer.duration,
+                    context: this.audioCtx
+                },
+                ...options
+            }, () => {
+                // remove played sound from playlist
+                this.playlist = this.playlist
+                    .filter(s => s.id != id);
+            })
+        });
+    }
+
+    stopPlayback(key) {
+        this.playlist = this.playlist
+        .filter(s => {
+            let targetBuffer = s.key === key;
+            if (targetBuffer) {
+                s.playback.pause();
+            }
+            return targetBuffer;
+        })
     }
 
     // reset game
