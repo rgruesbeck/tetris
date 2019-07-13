@@ -20,6 +20,7 @@
     "game-asset-loader": "0.0.3",
     "koji-tools": "^0.5.1",
     "parcel-bundler": "^1.12.3",
+    "prevent-parent": "0.0.2",
     "unlock-audio-context": "^0.1.0",
     "webfontloader": "^1.6.28"
   }

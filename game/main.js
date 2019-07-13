@@ -38,6 +38,8 @@ import audioContext from 'audio-context';
 import audioPlayback from 'audio-play';
 import unlockAudioContext from 'unlock-audio-context';
 
+import preventParent from 'prevent-parent';
+
 import {
     pickFromList,
     hashCode
@@ -75,6 +77,9 @@ class Game {
 
         this.audioCtx = audioContext(); // create new audio context
         this.playlist = [];
+
+        // prevent parent scroll
+        preventParent();
 
         // frame count, rate, and time
         // this is just a place to keep track of frame rate (not set it)
@@ -374,7 +379,7 @@ class Game {
         }
 
         // ready to play
-        if (this.state.current === 'ready') {
+        if (this.state.current === 'ready' && this.state.prev === 'loading') {
             this.overlay.hide('loading');
             this.canvas.style.opacity = 1;
             this.boardCanvas.style.opacity = 1;
@@ -393,7 +398,7 @@ class Game {
             this.overlay.setMute(this.state.muted);
             this.overlay.setPause(this.state.paused);
 
-            // this.setState({ current: 'play' });
+            this.setState({ current: 'ready' });
         }
 
         // game play
