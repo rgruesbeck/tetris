@@ -14,9 +14,3 @@ as well as domain setup and deployment targets.
 develop.json tells the koji editor what sort of develpment servers to create to let you
 run and test your app in real time. Make sure the configuration here matches what your app
 is running.
-
-### metadata.json
-
-metadata.json describes what this app should look like to other servers like facebook
-and google. In this file you can set the title that will show up on the top of the page
-as well as what will show up in a google search or a facebook share.
