@@ -1,7 +1,7 @@
 {
   "develop": {
     "frontend": {
-      "path": ".",
+      "path": "frontend",
       "port": 1234,
       "events": {
         "started": "npm start",
@@ -10,6 +10,15 @@
         "build-error": "npm ERR!"
       },
       "startCommand": "npm start"
+    },
+    "backend": {
+      "path": "backend",
+      "port": 3333,
+      "startCommand": "npm run start-dev",
+      "events": {
+        "started": "[koji] backend started",
+        "log": "[koji-log]"
+      }
     }
   }
 }

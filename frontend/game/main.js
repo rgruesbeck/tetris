@@ -100,7 +100,7 @@ class Game {
             modeInfinity: this.config.settings.modeInfinity,
             infinityAction: false,
             paused: false,
-            muted: localStorage.getItem('game-muted') === 'true'
+            muted: localStorage.getItem(`${this.prefix}-muted`) === 'true'
         };
 
         this.input = {
@@ -254,7 +254,6 @@ class Game {
             loadImage('block6', this.config.images.block6),
             loadImage('spectatorLeft', this.config.images.spectatorLeft),
             loadImage('spectatorRight', this.config.images.spectatorRight),
-            loadImage('backgroundImage', this.config.images.backgroundImage),
             loadSound('clearSound', this.config.sounds.clearSound),
             loadSound('dropSound', this.config.sounds.dropSound),
             loadSound('backgroundMusic', this.config.sounds.backgroundMusic),
@@ -410,19 +409,15 @@ class Game {
                 this.overlay.hide(['banner', 'button', 'instructions'])
             }
 
-            // play background music
+            // background music
             if (!this.state.muted && !this.state.backgroundMusic) {
-                let sound = this.sounds.backgroundMusic;
-                this.state.backgroundMusic = audioPlayback(sound, {
+                this.state.backgroundMusic = true;
+                this.playback('backgroundMusic', this.sounds.backgroundMusic, {
                     start: 0,
-                    end: sound.duration,
+                    end: this.sounds.backgroundMusic.duration,
                     loop: true,
                     context: this.audioCtx
                 });
-            }
-
-            if (!this.state.muted && this.state.backgroundMusic) {
-                this.state.backgroundMusic.play();
             }
 
             // check for game over
@@ -642,12 +637,21 @@ class Game {
         // game over
         if (this.state.current === 'over') {
 
-            this.state.backgroundMusic.pause();
             this.overlay.setBanner(this.config.settings.gameoverText);
+
+            // quick quit
+            setTimeout(() => {
+                window.setScore(this.state.score);
+                window.setAppView('setScore');
+            }, 1000)
         }
 
         // draw the next screen
-        this.requestFrame(() => this.play());
+        if (this.state.current === 'stop') {
+            this.cancelFrame();
+        } else {
+            this.requestFrame(() => this.play());
+        }
     }
 
     shiftStackDown() {
@@ -1017,7 +1021,7 @@ class Game {
 
     handleResize() {
 
-        document.location.reload();
+        // document.location.reload();
     }
 
     // pause game
@@ -1050,7 +1054,7 @@ class Game {
 
     // mute game
     mute() {
-        let key = this.prefix.concat('muted');
+        let key = `${this.prefix}-muted`;
         localStorage.setItem(
             key,
             localStorage.getItem(key) === 'true' ? 'false' : 'true'
@@ -1071,6 +1075,9 @@ class Game {
     }
 
     playback(key, audioBuffer, options = {}) {
+        // ignore playback requests while paused
+        if (this.state.muted) { return; }
+        
         // add to playlist
         let id = Math.random().toString(16).slice(2);
         this.playlist.push({
@@ -1102,9 +1109,15 @@ class Game {
         })
     }
 
+    // stop playlist
+    stopPlaylist() {
+      this.playlist
+      .forEach(s => this.stopPlayback(s.key))
+    }
+
     // reset game
     reset() {
-        document.location.reload();
+        // document.location.reload();
     }
 
     // update game state
@@ -1134,6 +1147,30 @@ class Game {
     // see game/helpers/animationframe.js for more information
     cancelFrame() {
         cancelAnimationFrame(this.frame.count);
+    }
+
+    // destroy
+    destroy() {
+      // stop game loop and music
+      this.setState({ current: 'stop' })
+      this.stopPlaylist();
+
+      // cleanup event listeners
+      document.removeEventListener('keydown', this.handleKeyboardInput);
+      document.removeEventListener('keyup', this.handleKeyboardInput);
+      document.removeEventListener('touchstart', this.handleSwipeInput);
+      document.removeEventListener('touchmove', this.handleSwipeInput);
+      document.removeEventListener('touchend', this.handleSwipeInput);
+      document.removeEventListener('touchstart', this.handleTap);
+      this.overlay.root.removeEventListener('click', this.handleClicks);
+      window.removeEventListener('resize', this.handleResize);
+      window.removeEventListener('orientationchange', this.handleResize);
+
+      // cleanup nodes
+      delete this.overlay;
+      delete this.canvas;
+      delete this.boardCanvas;
+      delete this.effectsCanvas;
     }
 }
 

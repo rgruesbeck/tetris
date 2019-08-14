@@ -6,8 +6,8 @@
   "scripts": {
     "prestart": "koji-tools watch &",
     "start": "npm run dev",
-    "dev": "npx parcel index.html",
-    "build": "npx parcel build index.html",
+    "dev": "npx parcel common/index.html",
+    "build": "npx parcel build common/index.html",
     "test": "echo \"Error: no test specified\" && exit 1",
     "postbuild": "koji-tools pwa"
   },
@@ -17,11 +17,20 @@
   "dependencies": {
     "audio-context": "^1.0.3",
     "audio-play": "^2.2.1",
-    "game-asset-loader": "0.0.3",
-    "koji-tools": "^0.5.1",
+    "game-asset-loader": "0.0.7",
+    "koji-tools": "^0.5.45",
     "parcel-bundler": "^1.12.3",
+    "preact": "^8.5.1",
     "prevent-parent": "0.0.2",
-    "unlock-audio-context": "^0.1.0",
+    "prop-types": "^15.7.2",
+    "unlock-audio-context": "^0.2.4",
     "webfontloader": "^1.6.28"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+    "@babel/plugin-transform-react-jsx": "^7.3.0",
+    "babel-preset-preact": "^2.0.0"
   }
 }

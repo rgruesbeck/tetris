@@ -7,3 +7,8 @@ dist
 
 # tmp
 .tmp
+
+# build folders
+frontend/dist
+backend/dist
+

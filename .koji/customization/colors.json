@@ -1,7 +1,11 @@
 {
   "colors": {
     "textColor": "#ffde55",
+    "lightTextColor": "#ffffff",
+    "darkTextColor": "#6d3326",
     "primaryColor": "#6d3326",
+    "secondaryColor": "#0ca656",
+    "tertiaryColor": "#fea832",
     "boardColor": "#0ca656",
     "backgroundColor": "#63D471",
     "block1": "#96c8ef",
@@ -11,65 +15,84 @@
     "block5": "#ffcf30",
     "block6": "pink"
   },
-  "@@editor": [
-    {
-      "key": "colors",
-      "name": "Colors",
-      "icon": "💅",
-      "source": "colors.json",
-      "fields": [
-        {
-          "key": "textColor",
-          "name": "Text color",
-          "description": "Default color for text",
-          "type": "color"
-        },
-        {
-          "key": "primaryColor",
-          "name": "Primary Color",
-          "type": "color"
-        },
-        {
-          "key": "backgroundColor",
-          "name": "Background color",
-          "type": "color"
-        },
-        {
-          "key": "boardColor",
-          "name": "Board Color",
-          "type": "color"
-        },
-        {
-          "key": "block1",
-          "name": "Block 1 Color",
-          "type": "color"
-        },
-        {
-          "key": "block2",
-          "name": "Block 2 Color",
-          "type": "color"
-        },
-        {
-          "key": "block3",
-          "name": "Block 3 Color",
-          "type": "color"
-        },
-        {
-          "key": "block4",
-          "name": "Block 4 Color",
-          "type": "color"
-        },
-        {
-          "key": "block5",
-          "name": "Block 5 Color",
-          "type": "color"
-        },
-        {
-          "key": "block6",
-          "name": "Block 6 Color",
-          "type": "color"
-        }
-      ]
-    }
-  ]
+  "@@editor": [{
+    "key": "colors",
+    "name": "Colors",
+    "icon": "💅",
+    "source": "colors.json",
+    "fields": [{
+        "key": "textColor",
+        "name": "Text color",
+        "description": "Default color for text",
+        "type": "color"
+      },
+      {
+        "key": "lightTextColor",
+        "name": "Light Text color",
+        "description": "Default color for light text",
+        "type": "color"
+      },
+      {
+        "key": "darkTextColor",
+        "name": "Dark Text color",
+        "description": "Default color for dark text",
+        "type": "color"
+      },
+      {
+        "key": "primaryColor",
+        "name": "Primary Color",
+        "type": "color"
+      },
+      {
+        "key": "secondaryColor",
+        "name": "Secondary Color",
+        "type": "color"
+      },
+      {
+        "key": "tertiaryColor",
+        "name": "Tertiary Color",
+        "type": "color"
+      },
+      {
+        "key": "backgroundColor",
+        "name": "Background color",
+        "type": "color"
+      },
+      {
+        "key": "boardColor",
+        "name": "Board Color",
+        "type": "color"
+      },
+      {
+        "key": "block1",
+        "name": "Block 1 Color",
+        "type": "color"
+      },
+      {
+        "key": "block2",
+        "name": "Block 2 Color",
+        "type": "color"
+      },
+      {
+        "key": "block3",
+        "name": "Block 3 Color",
+        "type": "color"
+      },
+      {
+        "key": "block4",
+        "name": "Block 4 Color",
+        "type": "color"
+      },
+      {
+        "key": "block5",
+        "name": "Block 5 Color",
+        "type": "color"
+      },
+      {
+        "key": "block6",
+        "name": "Block 6 Color",
+        "type": "color"
+      }
+    ]
+  }]
 }
