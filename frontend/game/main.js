@@ -447,10 +447,7 @@ class Game {
                 // to the stack of blocks
                 this.stack = [
                     ...this.stack,
-                    ...this.pieces
-                    .filter(piece => piece.placed)
-                    .map(piece => piece.body)
-                    .flat()
+                    ...this.placedBlocks()
                 ];
 
                 // remove placed pieces from pieces list
@@ -498,7 +495,12 @@ class Game {
                 this.board.blocks = [
                     ...this.pieces
                     .map(piece => piece.body)
-                    .flat(),
+                    .reduce((blocks, body) => {
+                        // for Safari 11 support
+                        // used in place of Array.flat()
+
+                        return [...blocks, ...body];
+                    }, []),
                     ...this.stack
                 ]
 
@@ -1019,9 +1021,16 @@ class Game {
         }
     }
 
-    handleResize() {
+    placedBlocks() {
+        return this.pieces
+        .filter(piece => piece.placed)
+        .map(piece => piece.body)
+        .reduce((blocks, body) => {
+            // for Safari 11 support
+            // used in place of Array.flat()
 
-        // document.location.reload();
+            return [...blocks, ...body];
+        }, [])
     }
 
     // pause game
